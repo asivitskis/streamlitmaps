@@ -20,6 +20,7 @@ with st.expander("Popo Agie Watershed Explorer"):
 
         hillshade = "https://github.com/asivitskis/EarthInquiryLab/raw/refs/heads/main/data/Elevation/hillshade_cog.tif"
         smoothed_dem = "https://github.com/asivitskis/EarthInquiryLab/raw/refs/heads/main/data/Elevation/smoothed_dem_cog.tif"
+        basin = "https://raw.githubusercontent.com/asivitskis/EarthInquiryLab/refs/heads/main/data/Hydro_data/pa_HUC10_basin.geojson"
         streams = "https://raw.githubusercontent.com/asivitskis/EarthInquiryLab/main/data/Hydro_data/stream_network.geojson"
         hstyle = {"color": "black", "weight": 3, "opacity": 1}
         
@@ -27,6 +28,12 @@ with st.expander("Popo Agie Watershed Explorer"):
         m.add_basemap("Satellite")
         m.add_cog_layer(smoothed_dem, name="Smoothed DEM", palette="terrain")
         m.add_cog_layer(hillshade, name="Hillshade COG", opacity=0.2)
+        m.add_geojson(
+            basin,
+            layer_name="HUC 10 Basin",
+            style={"color": "#ff2a00", "weight": 2, "fillOpacity": 0.5},
+            hover_style=hstyle,
+        )
         m.add_geojson(
             streams,
             layer_name="Drainage Network",
