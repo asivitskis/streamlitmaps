@@ -13,7 +13,7 @@ st.sidebar.info(markdown)
 logo = "https://i.imgur.com/UbOXYAU.png"
 st.sidebar.image(logo)
 
-st.title("Marker Cluster")
+st.title("Popo Agie Watershed Viewer")
 
 with st.expander("Popo Agie Watershed Explorer"):
     with st.echo():
