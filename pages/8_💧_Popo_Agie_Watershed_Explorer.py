@@ -15,13 +15,16 @@ st.sidebar.image(logo)
 
 st.title("Marker Cluster")
 
-with st.expander("See source code"):
+with st.expander("Popo Agie Watershed Explorer"):
     with st.echo():
 
-        m = leafmap.Map(center=[40, -100], zoom=4)
-        regions = "https://raw.githubusercontent.com/giswqs/leafmap/master/examples/data/us_regions.geojson"
+        hillshade = "https://github.com/asivitskis/EarthInquiryLab/raw/refs/heads/main/data/Elevation/hillshade_cog.tif"
+        smoothed_dem = "https://github.com/asivitskis/EarthInquiryLab/raw/refs/heads/main/data/Elevation/smoothed_dem_cog.tif"
         streams = "https://raw.githubusercontent.com/asivitskis/EarthInquiryLab/main/data/Hydro_data/stream_network.geojson"
-
+        
+        m = leafmap.Map(center=[40, -100], zoom=4)
+        m.add_cog_layer(hillshade, name="Hillshade COG", layer_opacity=0.8)
+        m.add_cog_layer(smoothed_dem, layer_name="Smoothed DEM")
         m.add_geojson(streams, layer_name="streams")
 
 m.to_streamlit(height=700)
