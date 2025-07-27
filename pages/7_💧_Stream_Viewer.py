@@ -20,7 +20,8 @@ with st.expander("See source code"):
 
         m = leafmap.Map(center=[40, -100], zoom=4)
         regions = "https://raw.githubusercontent.com/giswqs/leafmap/master/examples/data/us_regions.geojson"
+        streams = "https://raw.githubusercontent.com/asivitskis/EarthInquiryLab/main/data/Hydro_data/stream_network.geojson"
 
-        m.add_geojson(regions, layer_name="US Regions")
+        m.add_geojson(streams, layer_name="streams")
 
 m.to_streamlit(height=700)
