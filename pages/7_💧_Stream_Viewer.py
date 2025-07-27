@@ -16,7 +16,7 @@ st.title("Interactive Map")
 
 col1, col2 = st.columns([4, 1])
 options = list(leafmap.basemaps.keys())
-index = options.index("OpenTopoMap")
+index = options.index("Satellite")
 
 with col2:
 
@@ -34,4 +34,18 @@ with col1:
         locate_control=True, latlon_control=True, draw_export=True, minimap_control=True
     )
     m.add_basemap(basemap)
+    m.add_cog_layer(smoothed_dem, name="Smoothed DEM", palette="terrain")
+        m.add_cog_layer(hillshade, name="Hillshade COG", opacity=0.2)
+        m.add_geojson(
+            basin,
+            layer_name="HUC 10 Basin",
+            style={"color": "black", "weight": 2, "fillOpacity": 0},
+            info_mode="on_click",
+        )
+        m.add_geojson(
+            streams,
+            layer_name="Drainage Network",
+            style={"color": "#ff2a00", "weight": 2},
+            hover_style=hstyle,
+        )
     m.to_streamlit(height=700)
