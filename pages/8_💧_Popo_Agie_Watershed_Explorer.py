@@ -25,13 +25,12 @@ with st.expander("Popo Agie Watershed Explorer"):
         hstyle = {"color": "black", "weight": 3, "opacity": 1}
         
         m = leafmap.Map(center=[40, -100], zoom=4)
-        m.add_basemap("Satellite")
         m.add_cog_layer(smoothed_dem, name="Smoothed DEM", palette="terrain")
         m.add_cog_layer(hillshade, name="Hillshade COG", opacity=0.2)
         m.add_geojson(
             basin,
             layer_name="HUC 10 Basin",
-            style={"color": "#ff2a00", "weight": 2, "fillOpacity": 0},
+            style={"color": "black", "weight": 2, "fillOpacity": 0},
             hover_style=hstyle,
         )
         m.add_geojson(
