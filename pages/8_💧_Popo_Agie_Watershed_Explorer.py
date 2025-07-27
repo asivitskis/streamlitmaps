@@ -25,7 +25,7 @@ with st.expander("Popo Agie Watershed Explorer"):
         
         m = leafmap.Map(center=[40, -100], zoom=4)
         m.add_cog_layer(smoothed_dem, name="Smoothed DEM")
-        m.add_cog_layer(hillshade, name="Hillshade COG", layer_opacity=0.8)
+        m.add_cog_layer(hillshade, name="Hillshade COG", layer_opacity=0.9)
         m.add_geojson(
             streams,
             layer_name="streams",
