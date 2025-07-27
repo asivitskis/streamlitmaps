@@ -31,7 +31,7 @@ with st.expander("Popo Agie Watershed Explorer"):
         m.add_geojson(
             basin,
             layer_name="HUC 10 Basin",
-            style={"color": "#ff2a00", "weight": 2, "fillOpacity": 0.5},
+            style={"color": "#ff2a00", "weight": 2, "fillOpacity": 0},
             hover_style=hstyle,
         )
         m.add_geojson(
