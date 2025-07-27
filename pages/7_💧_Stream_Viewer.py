@@ -1,8 +1,6 @@
 import streamlit as st
 import leafmap.foliumap as leafmap
 
-st.set_page_config(layout="wide")
-
 markdown = """
 A Streamlit map template
 <https://github.com/opengeos/streamlit-map-template>
@@ -13,15 +11,22 @@ st.sidebar.info(markdown)
 logo = "https://i.imgur.com/UbOXYAU.png"
 st.sidebar.image(logo)
 
-st.title("Marker Cluster")
 
-with st.expander("See source code"):
-    with st.echo():
+st.title("Interactive Map")
 
-        m = leafmap.Map(center=[40, -100], zoom=4)
-        regions = "https://raw.githubusercontent.com/giswqs/leafmap/master/examples/data/us_regions.geojson"
-        streams = "https://raw.githubusercontent.com/asivitskis/EarthInquiryLab/main/data/Hydro_data/stream_network.geojson"
+col1, col2 = st.columns([4, 1])
+options = list(leafmap.basemaps.keys())
+index = options.index("OpenTopoMap")
 
-        m.add_geojson(streams, layer_name="streams")
+with col2:
 
-m.to_streamlit(height=700)
+    basemap = st.selectbox("Select a basemap:", options, index)
+
+
+with col1:
+
+    m = leafmap.Map(
+        locate_control=True, latlon_control=True, draw_export=True, minimap_control=True
+    )
+    m.add_basemap(basemap)
+    m.to_streamlit(height=700)
