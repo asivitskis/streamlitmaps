@@ -2,7 +2,7 @@
 
 A streamlit template for mapping applications. It can be deployed to [Streamlit Cloud](https://streamlit.io/cloud).
 
-Web App URL: <https://map-template.streamlit.app>
+Web App URL: <https://earth-inquiry-web-maps.streamlit.app/>
 
 ## Instructions
 
