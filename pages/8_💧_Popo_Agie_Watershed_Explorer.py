@@ -21,15 +21,16 @@ with st.expander("Popo Agie Watershed Explorer"):
         hillshade = "https://github.com/asivitskis/EarthInquiryLab/raw/refs/heads/main/data/Elevation/hillshade_cog.tif"
         smoothed_dem = "https://github.com/asivitskis/EarthInquiryLab/raw/refs/heads/main/data/Elevation/smoothed_dem_cog.tif"
         streams = "https://raw.githubusercontent.com/asivitskis/EarthInquiryLab/main/data/Hydro_data/stream_network.geojson"
-        style = {"color": "black", "weight": 3, "opacity": 1}
+        hstyle = {"color": "black", "weight": 3, "opacity": 1}
         
         m = leafmap.Map(center=[40, -100], zoom=4)
+        m.add_cog_layer(hillshade, name="Hillshade COG", opacity=0.8)
         m.add_cog_layer(smoothed_dem, name="Smoothed DEM", palette="terrain")
-        m.add_cog_layer(hillshade, name="Hillshade COG", opacity=0.2)
         m.add_geojson(
             streams,
-            layer_name="streams",
-            hover_style=style,
+            layer_name="Drainage Network",
+            style={"color": "#ff2a00", "weight": 1},
+            hover_style=hstyle,
         )
 
 m.to_streamlit(height=700)
