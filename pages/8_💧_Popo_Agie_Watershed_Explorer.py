@@ -39,5 +39,5 @@ with st.expander("Popo Agie Watershed Explorer"):
             style={"color": "#ff2a00", "weight": 2},
             hover_style=hstyle,
         )
-
+        m = leafmap.Map(center=[42.70, -108.883], zoom=10)
 m.to_streamlit(height=700)
