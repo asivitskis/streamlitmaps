@@ -25,6 +25,7 @@ with st.expander("Popo Agie Watershed Explorer"):
         hstyle = {"color": "black", "weight": 3, "opacity": 1}
         
         m = leafmap.Map(center=[42.70, -108.883], zoom=10)
+        
         m.add_cog_layer(smoothed_dem, name="Smoothed DEM", palette="terrain")
         m.add_cog_layer(hillshade, name="Hillshade COG", opacity=0.2)
         m.add_geojson(
@@ -39,5 +40,4 @@ with st.expander("Popo Agie Watershed Explorer"):
             style={"color": "#ff2a00", "weight": 2},
             hover_style=hstyle,
         )
-        m = leafmap.Map(center=[42.70, -108.883], zoom=10)
 m.to_streamlit(height=700)
