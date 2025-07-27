@@ -4,3 +4,4 @@ leafmap
 owslib
 streamlit
 rasterio
+rioxarray
