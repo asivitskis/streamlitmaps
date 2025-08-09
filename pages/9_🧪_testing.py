@@ -1,6 +1,13 @@
 import streamlit as st
 import leafmap.foliumap as leafmap
 
+st.title("Searching Basemaps")
+st.markdown(
+    """
+This app is a demonstration of searching and loading basemaps from [xyzservices](https://github.com/geopandas/xyzservices) and [Quick Map Services (QMS)](https://github.com/nextgis/quickmapservices). Selecting from 1000+ basemaps with a few clicks.
+"""
+)
+
 st.set_page_config(layout="wide")
 
 hillshade = "https://github.com/asivitskis/EarthInquiryLab/raw/refs/heads/main/data/Elevation/hillshade_cog.tif"
