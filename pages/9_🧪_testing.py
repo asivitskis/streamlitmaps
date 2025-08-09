@@ -1,10 +1,11 @@
 import streamlit as st
 import leafmap.foliumap as leafmap
 
-st.title("Searching Basemaps")
+st.title("Popo Agie River Watershed Viewer")
 st.markdown(
     """
-This app is a demonstration of searching and loading basemaps from [xyzservices](https://github.com/geopandas/xyzservices) and [Quick Map Services (QMS)](https://github.com/nextgis/quickmapservices). Selecting from 1000+ basemaps with a few clicks.
+This app is a demonstration of visualizing delineated stream network data generated with [WhiteboxTools](https://www.whiteboxgeo.com) and [leafmap](https://leafmap.org/). 
+Both open source python packages can support higly customizable geospatial applications.
 """
 )
 
