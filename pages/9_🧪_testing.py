@@ -29,4 +29,4 @@ m.add_geojson(
     zoom_to_layer=False,
 )
 
-m.to_streamlit(height=700, width=700)
+m.to_streamlit(height=700, width=900)
