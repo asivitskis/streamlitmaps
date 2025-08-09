@@ -10,6 +10,8 @@ streams = "https://raw.githubusercontent.com/asivitskis/EarthInquiryLab/main/dat
 hstyle = {"color": "black", "weight": 3, "opacity": 1}
 
 m = leafmap.Map(center=[42.70, -108.883], zoom=10)
+text = "Hello World"
+m.add_text(text, fontsize=20, position="bottom-right")
 m.add_basemap("SATELLITE")
 m.add_colormap(cmap="terrain", vmin=1500, vmax=4000, label="Elevation (m)", width=2)
 m.add_cog_layer(smoothed_dem, name="Smoothed DEM", palette="terrain")
