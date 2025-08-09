@@ -11,7 +11,7 @@ hstyle = {"color": "black", "weight": 3, "opacity": 1}
 
 m = leafmap.Map(center=[42.70, -108.883], zoom=10)
 m.add_basemap("SATELLITE")
-m.add_colormap(cmap="terrain", vmin=1500, vmax=4000, label="Elevation (m)", withd=4)
+m.add_colormap(cmap="terrain", vmin=1500, vmax=4000, label="Elevation (m)", width=4)
 m.add_cog_layer(smoothed_dem, name="Smoothed DEM", palette="terrain")
 m.add_cog_layer(hillshade, name="Hillshade COG", opacity=0.2)
 m.add_geojson(
