@@ -1,5 +1,6 @@
 import streamlit as st
-import leafmap.foliumap as leafmap
+import leafmap.foliumap as leafmap_folium
+import leafmap  # to access get_nwi and other utilities
 from shapely.ops import unary_union
 import geopandas as gpd
 
@@ -13,7 +14,7 @@ basemap_choice = st.sidebar.selectbox("Select Basemap", ["Satellite", "Esri.Worl
 # Load static data
 bbox_geometry = {"xmin": -80.448555, "ymin": 36.375243, "xmax": -80.388988, "ymax": 36.415039}
 gdf = gpd.read_file("stokes_parcels_demo.geojson")
-gdf_nwi = leafmap.get_nwi(bbox_geometry)
+gdf_nwi = leafmap.get_nwi(bbox_geometry)  # ✅ works now
 
 # Styles
 parcel_style = {"color": "red", "fillColor": "red", "fillOpacity": 0, "weight": 2}
@@ -33,8 +34,8 @@ def create_map(buffer_distance):
     buffer_gdf_merged = gpd.GeoDataFrame(geometry=[merged_buffer], crs=gdf_nwi.crs)
     buffer_gdf_merged = buffer_gdf_merged.to_crs(epsg=4326)
     
-    # Create map
-    m = leafmap.Map(center=[36.4039, -80.4379], zoom=16)
+    # Create folium-based map
+    m = leafmap_folium.Map(center=[36.4039, -80.4379], zoom=16)
     
     # Add layers
     m.add_gdf(buffer_gdf_merged, style=buffer_style, hover_style=buffer_hover_style, layer_name="Stream Buffer", info_mode="off")
