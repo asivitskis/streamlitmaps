@@ -98,6 +98,7 @@ with col1:
         style=parcel_style,
         hover_style=parcel_hover,
         layer_name="Stokes Parcels",
+        info_mode="on_click"
     )
 
     # Add basemap from dropdown
