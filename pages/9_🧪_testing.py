@@ -52,7 +52,7 @@ def create_map(buffer_distance):
     # Always add parcels
     m.add_gdf(gdf, style=parcel_style, hover_style=parcel_hover, layer_name="Stokes Parcels")
 
-    m.add_basemap(Satellite)
+    m.add_basemap("Satellite")
     return m
 
 # Display map
