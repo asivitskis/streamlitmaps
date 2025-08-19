@@ -37,7 +37,7 @@ buffer_hover_style = {"color": "#FFA500", "weight": 2, "fillColor": "#FFFF00", "
 
 # Function to generate the map
 def create_map(buffer_distance):
-    m = leafmap_folium.Map(center=[36.4039, -80.4379], zoom=16)
+    m = leafmap_folium.Map(center=[36.40391048635998, -80.43790340423585], zoom=16)
 
     # Only build buffer if streams exist
     if not gdf_nwi.empty:
@@ -52,7 +52,7 @@ def create_map(buffer_distance):
     # Always add parcels
     m.add_gdf(gdf, style=parcel_style, hover_style=parcel_hover, layer_name="Stokes Parcels")
 
-    m.add_basemap(basemap_choice)
+    m.add_basemap(Satellite)
     return m
 
 # Display map
