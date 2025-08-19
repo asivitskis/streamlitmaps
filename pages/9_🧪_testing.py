@@ -1,40 +1,50 @@
 import streamlit as st
 import leafmap.foliumap as leafmap
-
-st.title("Popo Agie River Watershed Viewer")
-st.markdown(
-    """
-This app is a demonstration of visualizing delineated stream network data generated with [WhiteboxTools](https://www.whiteboxgeo.com) and [leafmap](https://leafmap.org/). 
-Both open source python packages can support higly customizable geospatial applications.
-"""
-)
+from shapely.ops import unary_union
+import geopandas as gpd
 
 st.set_page_config(layout="wide")
+st.title("Interactive Parcel & Streams Demo")
 
-hillshade = "https://github.com/asivitskis/EarthInquiryLab/raw/refs/heads/main/data/Elevation/hillshade_cog.tif"
-smoothed_dem = "https://github.com/asivitskis/EarthInquiryLab/raw/refs/heads/main/data/Elevation/smoothed_dem_cog.tif"
-basin = "https://raw.githubusercontent.com/asivitskis/EarthInquiryLab/refs/heads/main/data/Hydro_data/pa_HUC10_basin.geojson"
-streams = "https://raw.githubusercontent.com/asivitskis/EarthInquiryLab/main/data/Hydro_data/stream_network.geojson"
-hstyle = {"color": "black", "weight": 3, "opacity": 1}
+# Sidebar controls
+buffer_distance = st.sidebar.slider("Buffer Distance (meters)", min_value=10, max_value=200, value=50, step=10)
+basemap_choice = st.sidebar.selectbox("Select Basemap", ["Satellite", "Esri.WorldTopoMap", "OpenStreetMap"])
 
-m = leafmap.Map(center=[42.70, -108.883], zoom=10)
-m.add_basemap("SATELLITE")
-m.add_colormap(cmap="terrain", vmin=1500, vmax=4000, label="Elevation (m)", width=2)
-m.add_cog_layer(smoothed_dem, name="Smoothed DEM", palette="terrain")
-m.add_cog_layer(hillshade, name="Hillshade COG", opacity=0.2)
-m.add_geojson(
-    basin,
-    layer_name="HUC 10 Basin",
-    style={"color": "black", "weight": 2, "fillOpacity": 0},
-    info_mode="on_click",
-    zoom_to_layer=False,
-)
-m.add_geojson(
-    streams,
-    layer_name="Drainage Network",
-    style={"color": "#ff2a00", "weight": 2},
-    hover_style=hstyle,
-    zoom_to_layer=False,
-)
+# Load static data
+bbox_geometry = {"xmin": -80.448555, "ymin": 36.375243, "xmax": -80.388988, "ymax": 36.415039}
+gdf = gpd.read_file("stokes_parcels_demo.geojson")
+gdf_nwi = leafmap.get_nwi(bbox_geometry)
 
-m.to_streamlit(height=700, width=900)
+# Styles
+parcel_style = {"color": "red", "fillColor": "red", "fillOpacity": 0, "weight": 2}
+parcel_hover = {"color": "#00FFFF", "weight": 4, "opacity": 1}
+
+stream_style = {"color": "#0084FF", "weight": 2, "opacity": 0.7}
+stream_hover = {"color": "#0084FF", "weight": 3, "opacity": 1}
+
+buffer_style = {"color": "yellow", "weight": 1, "fillColor": "yellow", "fillOpacity": 0}
+buffer_hover_style = {"color": "#FFA500", "weight": 2, "fillColor": "#FFFF00", "fillOpacity": 0.2}
+
+# Function to generate the map
+def create_map(buffer_distance):
+    # Compute dynamic buffer
+    buffer_gdf = gdf_nwi.buffer(buffer_distance)
+    merged_buffer = unary_union(buffer_gdf)
+    buffer_gdf_merged = gpd.GeoDataFrame(geometry=[merged_buffer], crs=gdf_nwi.crs)
+    buffer_gdf_merged = buffer_gdf_merged.to_crs(epsg=4326)
+    
+    # Create map
+    m = leafmap.Map(center=[36.4039, -80.4379], zoom=16)
+    
+    # Add layers
+    m.add_gdf(buffer_gdf_merged, style=buffer_style, hover_style=buffer_hover_style, layer_name="Stream Buffer", info_mode="off")
+    m.add_gdf(gdf, style=parcel_style, hover_style=parcel_hover, layer_name="Stokes Parcels")
+    m.add_gdf(gdf_nwi, style=stream_style, hover_style=stream_hover, layer_name="Streams and Wetlands", info_mode="off")
+    
+    # Add basemap
+    m.add_basemap(basemap_choice)
+    return m
+
+# Display map
+m = create_map(buffer_distance)
+m.to_streamlit(height=700)
