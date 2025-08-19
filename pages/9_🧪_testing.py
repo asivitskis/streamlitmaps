@@ -12,12 +12,7 @@ st.markdown(
     """
     This lightweight parcel viewer map displays **parcel boundaries** (from NC OneMap) 
     together with **streams and wetlands** (from the USFWS National Wetlands Inventory).  
-
-    Use the **buffer size slider** on the right to experiment with different buffer 
-    distances around streams and wetlands. This can help visualize potential 
-    areas of influence for planning or environmental review. Parcels can be clicked 
-    or hovered to highlight them, while buffer zones can be toggled and resized 
-    dynamically.
+    
     """
 )
 
@@ -33,6 +28,15 @@ with col2:
     basemap_choice = st.selectbox("Select a basemap:", options, index)
     buffer_distance = st.slider(
         "Buffer Distance (meters)", min_value=10, max_value=200, value=50, step=10
+    )
+    st.markdown(
+        """
+        Use the **buffer size slider** on the right to experiment with different buffer 
+        distances around streams and wetlands. This can help visualize potential 
+        areas of influence for planning or environmental review. Parcels can be clicked 
+        or hovered to highlight them, while buffer zones can be toggled and resized 
+        dynamically.
+        """
     )
 
 # Load data
