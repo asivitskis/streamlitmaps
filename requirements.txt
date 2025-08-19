@@ -5,3 +5,4 @@ owslib
 streamlit
 rasterio
 rioxarray
+shapely
