@@ -6,17 +6,21 @@ import geopandas as gpd
 
 st.set_page_config(layout="wide")
 
-# Sidebar info (left sidebar)
-markdown = """
-Interactive parcel/stream demo  
-<https://github.com/opengeos/streamlit-map-template>
-"""
-st.sidebar.title("About")
-st.sidebar.info(markdown)
-logo = "https://i.imgur.com/UbOXYAU.png"
-st.sidebar.image(logo)
-
 st.title("Interactive Parcel & Streams Demo")
+
+st.markdown(
+    """
+    This lightweight parcel viewer map displays **parcel boundaries** (from NC OneMap) 
+    together with **streams and wetlands** (from the USFWS National Wetlands Inventory).  
+
+    Use the **buffer size slider** on the right to experiment with different buffer 
+    distances around streams and wetlands. This can help visualize potential 
+    areas of influence for planning or environmental review.  
+
+    Parcels can be clicked or hovered to highlight them, while buffer zones can be 
+    toggled and resized dynamically.
+    """
+)
 
 # Two-column layout: left map, right controls
 col1, col2 = st.columns([4, 1])
@@ -83,6 +87,7 @@ with col1:
             hover_style=buffer_hover_style,
             layer_name="Stream Buffer",
             info_mode="off",
+            zoom_to_layer=False,
         )
         m.add_gdf(
             gdf_nwi,
@@ -90,6 +95,7 @@ with col1:
             hover_style=stream_hover,
             layer_name="Streams and Wetlands",
             info_mode="off",
+            zoom_to_layer=False,
         )
 
     # Parcels
@@ -98,7 +104,8 @@ with col1:
         style=parcel_style,
         hover_style=parcel_hover,
         layer_name="Stokes Parcels",
-        info_mode="on_click"
+        info_mode="on_click",
+        zoom_to_layer=False,
     )
 
     # Add basemap from dropdown
