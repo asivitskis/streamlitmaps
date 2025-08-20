@@ -10,11 +10,13 @@ st.title("Interactive Parcel & Streams Demo")
 
 st.markdown(
     """
-    This lightweight parcel viewer map displays **parcel boundaries** (from NC OneMap) 
-    together with **streams and wetlands** (from the USFWS National Wetlands Inventory).  
-    
+    An interactive web map for **visualizing parcels, streams, and wetlands** in 
+    relation to potential restoration opportunities. Designed to support 
+    conservation planning, mitigation project design, and stakeholder engagement. 
+    (Data from NC OneMap and USFWS National Wetlands Inventory)
     """
 )
+
 
 # Two-column layout: left map, right controls
 col1, col2 = st.columns([4, 1])
@@ -32,11 +34,13 @@ with col2:
     st.markdown(
         """
         Use the **buffer size slider** above to experiment with different buffer 
-        distances around streams and wetlands. This can help visualize potential 
-        areas of influence for planning or environmental review. 
+        distances around streams and wetlands. This can help evalaute potential 
+        restoration scenarios for nutrient and sediment reduction, habitat connectivity, 
+        and long-term easement planning.  
         
-        **Parcels** can be clicked to enable a pop-up with ownership information, while 
-        buffer zones can be toggled and resized dynamically.
+         **Parcel boundaries** are clickable for ownership details, enabling quick 
+        review of landholder context during project design. Buffer zones update 
+        dynamically to support scenario testing and conservation planning discussions.
         """
     )
 
