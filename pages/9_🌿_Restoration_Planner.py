@@ -6,14 +6,15 @@ import geopandas as gpd
 
 st.set_page_config(layout="wide")
 
-st.title("Interactive Parcel & Streams Demo")
+st.title("Restoration Planner: Interactive Demo")
 
 st.markdown(
     """
-    An interactive web map for **visualizing parcels, streams, and wetlands** in 
-    relation to potential restoration opportunities. Designed to support 
-    conservation planning, mitigation project design, and stakeholder engagement. 
-    (Data from NC OneMap and USFWS National Wetlands Inventory)
+    An interactive web map for exploring **parcels, streams, and wetlands** in relation 
+    to potential restoration opportunities. Built to support conservation planning, 
+    mitigation design, and stakeholder engagement.  
+    (Data: NC OneMap, USFWS National Wetlands Inventory)
+    
     """
 )
 
