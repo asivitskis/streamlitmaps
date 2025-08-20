@@ -35,12 +35,11 @@ with col2:
         """
         Use the **buffer size slider** above to experiment with different buffer 
         distances around streams and wetlands. This can help evalaute potential 
-        restoration scenarios for nutrient and sediment reduction, habitat connectivity, 
-        and long-term easement planning.  
+        restoration opporunities for planning, design, and environmental review.
         
-         **Parcel boundaries** are clickable for ownership details, enabling quick 
-        review of landholder context during project design. Buffer zones update 
-        dynamically to support scenario testing and conservation planning discussions.
+        **Parcels** can be clicked for ownership details, giving quick insight into 
+        landholder context. Buffer zones update dynamically to support scenario testing 
+        and conservation planning discussions.
         """
     )
 
