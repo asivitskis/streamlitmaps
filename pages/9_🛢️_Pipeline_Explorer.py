@@ -15,9 +15,8 @@ st.markdown(
     intersections with sovereign Tribal territories.  
 
     The goal here is not to replace those resources, but to offer a **dynamic, 
-    open-source map** that might complement them — allowing educators, students, 
+    open-source map** that might complement them, allowing educators, students, 
     and communities to:
-    
     - Zoom into regions of interest  
     - Explore pipeline attributes interactively  
     - Compare with other open-source geographic datasets  
