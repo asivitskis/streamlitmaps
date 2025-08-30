@@ -4,7 +4,7 @@ import leafmap.foliumap as leafmap
 st.set_page_config(layout="wide")
 
 # Title and description
-st.title("🛢️ Pipeline Explorer: Interactive Demo")
+st.title("Pipeline Explorer: Interactive Demo")
 
 st.markdown(
     """
