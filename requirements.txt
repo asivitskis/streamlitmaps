@@ -6,3 +6,4 @@ streamlit
 rasterio
 rioxarray
 shapely
+fiona
