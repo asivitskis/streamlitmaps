@@ -1,1 +1,5 @@
-python-3.11
+# at repo root
+echo "python-3.11" > runtime.txt
+git add runtime.txt
+git commit -m "Set Python runtime to 3.11 for geospatial wheels"
+git push origin main
