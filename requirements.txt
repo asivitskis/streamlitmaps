@@ -8,7 +8,7 @@ rioxarray==0.15.5
 
 # Mapping & services
 leafmap==0.29.0
-owslib==0.31.1
+owslib==0.34.1
 
 # App framework
 streamlit==1.37.1
