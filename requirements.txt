@@ -1,9 +1,14 @@
---find-links=https://girder.github.io/large_image_wheels GDAL
-geopandas
-leafmap
-owslib
-streamlit
-rasterio
-rioxarray
-shapely
-fiona
+# Core geospatial stack
+gdal==3.6.4
+fiona==1.9.5
+rasterio==1.3.9
+shapely==2.0.3
+geopandas==0.14.3
+rioxarray==0.15.5
+
+# Mapping & services
+leafmap==0.29.0
+owslib==0.31.1
+
+# App framework
+streamlit==1.37.1
