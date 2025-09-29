@@ -4,5 +4,5 @@ owslib
 streamlit
 fiona
 rasterio
-sheply
+shapely
 rioxarray
