@@ -88,13 +88,14 @@ with col1:
     # --- Tribal Census Tracts Layer (optional toggle) ---
     if show_tribal:
         tribal_layer_url = (
-            "https://services2.arcgis.com/FiaPA4ga0iQKduv3/arcgis/rest/services/"
-            "Tribal_Census_Tracts_v1/FeatureServer/0"
+            "https://services.arcgis.com/U7I2hMhPtOeGx0fs/arcgis/rest/services/"
+            "Land_Areas_of_Federally_Recognized_Tribes/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson"
         )
 
-        m.add_arcgis_layer(
-            url=tribal_layer_url,
+        m.add_vector(
+            tribal_layer_url,
             layer_name="Tribal Census Tracts",
+            info_mode="on_hover"
             style={"color": "#2E8B57", "weight": 1, "fillOpacity": 0.2},
         )
 
