@@ -10,19 +10,21 @@ st.title("Pipeline Explorer: Interactive Demo")
 
 st.markdown(
     """
-    An interactive web map for exploring **U.S. petroleum product pipelines**.  
+    An interactive web map for exploring **U.S. petroleum product pipelines** and 
+    **federally recognized Tribal lands**.  
+
     This tool is inspired by and seeks to honor the work of 
     [Tribal Nations Maps](https://tribalnationsmaps.com/), who have created detailed 
-    static maps and educational resources highlighting pipeline projects and their 
+    maps and educational resources highlighting pipeline projects and their 
     intersections with sovereign Tribal territories.  
 
     The goal here is not to replace those resources, but to offer a **dynamic, 
-    open-source map** that might complement them, allowing educators, students, 
+    open-source map** that might complement them, enabling educators, students, 
     and communities to:
     - Zoom into regions of interest  
     - Explore pipeline attributes interactively  
-    - Compare with other open-source geographic datasets  
-
+    - Compare with publicly available federal datasets on Tribal lands  
+    - Engage in critical inquiry around geography, data, and sovereignty 
     """
 )
 
@@ -42,24 +44,24 @@ with col2:
     basemap_choice = st.selectbox("Select a basemap:", options, index)
 
     # Toggle to show or hide the Tribal Census Tracts layer
-    show_tribal = st.checkbox("Show Tribal Census Tracts", value=True)
+    show_tribal = st.checkbox("Show Federally Recognized Tribal Lands", value=True)
 
     st.markdown(
         """
-        **About the Tribal Census Tracts layer**
+        **About the Tribal Lands layer**
 
-        This layer displays *Tribal Census Tracts* from the **U.S. Census Bureau**,  
-        accessed via **Esri Federal Data** under a [CC BY 4.0 license](https://creativecommons.org/licenses/by/4.0/).  
+        Data source: **U.S. Bureau of Indian Affairs (BIA)** via the  
+        *American Conservation and Stewardship Atlas*  
+        ([GeoJSON link](https://services.arcgis.com/U7I2hMhPtOeGx0fs/arcgis/rest/services/Land_Areas_of_Federally_Recognized_Tribes/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson))  
 
-        Tribal census tracts are **statistical areas** created for Census purposes —  
-        they may not reflect the full extent of sovereign or culturally significant 
-        territories. They are included here to support exploration of how federal 
-        datasets represent Indigenous lands and to encourage critical discussion 
-        about **sovereignty, representation, and data ethics**.
+        This dataset represents **federally recognized Tribal land areas**, including 
+        reservations, trust lands, and dependent communities.  
+        It is suitable for **educational and illustrative purposes only** and does not 
+        define legal or jurisdictional boundaries.  
 
         ---
-        Use the dropdown above to switch basemaps. Pipelines can be hovered over 
-        to reveal their attributes, such as operator information.
+        Use the dropdown above to switch basemaps.  
+        Pipelines can be hovered over to reveal operator and facility attributes.
         """
     )
 
@@ -92,11 +94,15 @@ with col1:
             "Land_Areas_of_Federally_Recognized_Tribes/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson"
         )
 
+        tribal_style = {"color": "#2E8B57", "fillColor": "#2E8B57", "weight": 1, "fillOpacity": 0.3}
+        tribal_hover = {"color": "black", "weight": 2, "opacity": 1}
+
         m.add_vector(
             tribal_layer_url,
             layer_name="Tribal Census Tracts",
             info_mode="on_hover",
-            style={"color": "#2E8B57", "weight": 1, "fillOpacity": 0.2},
+            style=tribal_style,
+            hover_style=tribal_hover,
         )
 
     # --- Basemap ---
