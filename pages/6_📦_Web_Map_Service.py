@@ -95,7 +95,7 @@ with col1:
         m.add_vector(
             tribal_layer_url,
             layer_name="Tribal Census Tracts",
-            info_mode="on_hover"
+            info_mode="on_hover",
             style={"color": "#2E8B57", "weight": 1, "fillOpacity": 0.2},
         )
 
