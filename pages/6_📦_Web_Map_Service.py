@@ -14,13 +14,13 @@ st.markdown(
     An interactive web map for exploring **U.S. petroleum product pipelines** and 
     **federally recognized Tribal lands**.  
 
-    This tool honors the work of [Tribal Nations Maps](https://tribalnationsmaps.com/), 
-    whose cartographic and educational efforts highlight how infrastructure projects 
-    intersect with sovereign Tribal territories.  
+    This tool seeks to honor the work of [Tribal Nations Maps](https://tribalnationsmaps.com/), 
+    whose cartographic and educational efforts highlight where proposed pipelines intersect with tribal
+    homelands of over 1900 nations.  
 
     The goal here is to offer an **open-source, dynamic platform** to help 
     educators, students, and communities:
-    - Visualize where pipelines and Tribal lands intersect  
+    - Visualize where active petroleum pipelines and Tribal lands intersect  
     - Explore open-source geospatial data critically and transparently  
     - Foster inquiry and reflection around environmental justice and sovereignty  
 
@@ -47,16 +47,18 @@ with col2:
     basemap_choice = st.selectbox("Select a basemap:", options, index)
 
     # Layer toggles
-    show_pipeline = st.checkbox("Show Petroleum Pipelines", value=True)
-    show_tribal = st.checkbox("Show Federally Recognized Tribal Lands", value=True)
+    show_pipeline = st.checkbox("🟣 Show Petroleum Pipelines", value=True)
+    show_tribal = st.checkbox("🟢 Show Federally Recognized Tribal Lands", value=True)
+    show_intersection = st.checkbox("🟠 Pipeline-Tribal Intersections", valeu=True)
 
     # Intersection opacity control
     intersection_opacity = st.slider(
         "Intersection Layer Opacity",
         min_value=0.0,
         max_value=1.0,
-        value=0.7,
+        value=0.3,
         step=0.1,
+        help="Adjust how visible the intersection areas appear on the map."
     )
 
     st.markdown(
@@ -124,6 +126,15 @@ intersection_gdf = compute_intersections(pipeline_gdf, tribal_gdf)
 # Map rendering
 # -------------------------------------------------------------------
 with col1:
+    st.markdown(
+        """
+        ### 🔍 Explore the Map
+        - Use the checkboxes on the right to toggle layers  
+        - Hover over pipelines or lands to view attributes  
+        - Adjust intersection opacity to highlight overlap areas  
+        """
+    )
+    
     m = leafmap.Map(center=[40, -100], zoom=4)
 
     pipeline_style = {"color": "#b95eff", "weight": 1, "opacity": 0.8}
@@ -132,13 +143,6 @@ with col1:
     tribal_style = {"color": "#00704A", "fillColor": "#00704A", "fillOpacity": 0.2, "weight": 1}
     tribal_hover = {"color": "#004d33", "weight": 2, "fillOpacity": 0.3}
 
-    intersection_style = {
-        "color": "#ff8c00",  # orange border
-        "weight": 4,
-        "opacity": 1,
-        "fillColor": "#ffa500",
-        "fillOpacity": intersection_opacity,
-    }
     intersection_hover = {"color": "red", "weight": 5, "opacity": 1}
 
     # Add layers
@@ -158,10 +162,16 @@ with col1:
             layer_name="Tribal Lands",
         )
 
-    if not intersection_gdf.empty:
+    if show_intersection and not intersection_gdf.empty:
         m.add_gdf(
             intersection_gdf,
-            style=intersection_style,
+            styl_functione= almbda x: {
+                "color": "#ff8c00",   # orange border
+                "weight": 4,
+                "opacity": 1,
+                "fillColor": "#ffa500",
+                "fillOpacity": intersection_opacity,
+            },
             hover_style=intersection_hover,
             layer_name="Pipeline-Tribal Intersections",
         )
@@ -181,3 +191,15 @@ with col1:
 
     m.add_basemap(basemap_choice)
     m.to_streamlit(height=700)
+
+# -------------------------------------------------------------------
+# Reflection prompt under map
+# -------------------------------------------------------------------
+st.info(
+    """
+    💭 **Think About:**  
+    - What regions show the most overlap between pipelines and Tribal lands?  
+    - What might these intersections mean for sovereignty and environmental safety?  
+    - What additional data could make this map more complete or just?  
+    """
+)
