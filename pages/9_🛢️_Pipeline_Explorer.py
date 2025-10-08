@@ -11,11 +11,13 @@ st.title("Pipeline Explorer: Interactive Demo")
 
 st.markdown(
     """
-    An interactive web map for exploring **U.S. petroleum product pipelines** and 
-    their intersections with **federally recognized Tribal lands**.  
-    This map seeks to build upon and honor the work of 
-    [Tribal Nations Maps](https://tribalnationsmaps.com/), which document these 
-    relationships through static maps and educational materials.  
+     An interactive web map for exploring **U.S. petroleum product pipelines** and 
+    **federally recognized Tribal lands**.  
+
+    This tool is inspired by and seeks to honor the work of 
+    [Tribal Nations Maps](https://tribalnationsmaps.com/), who have created detailed 
+    maps and educational resources highlighting pipeline projects and their 
+    intersections with sovereign Tribal territories.   
 
     The goal here is to offer an **open-source, dynamic mapping platform** to help 
     educators, students, and communities:
@@ -40,6 +42,10 @@ index = options.index(default_basemap)
 
 with col2:
     basemap_choice = st.selectbox("Select a basemap:", options, index)
+
+    #Toggle to show or hide layers
+    show_tribal = st.checkbox("Show Federally Recognized Tribal Lands", value=True)
+    
     st.markdown(
         """
         Use the dropdown above to switch basemaps.  
@@ -103,8 +109,15 @@ with col1:
     intersection_hover = {"color": "red", "weight": 3, "opacity": 1}
 
     # Add layers
-    m.add_gdf(tribal_gdf, style=tribal_style, hover_style=tribal_hover, layer_name="Tribal Lands")
     m.add_gdf(pipeline_gdf, style=pipeline_style, hover_style=pipeline_hover, layer_name="Pipelines")
+
+    if show_tribal:
+        m.add_gdf(
+            tribal_gdf, 
+            style=tribal_style, 
+            hover_style=tribal_hover, 
+            layer_name="Tribal Lands",
+        )
 
     if not intersection_gdf.empty:
         m.add_gdf(
