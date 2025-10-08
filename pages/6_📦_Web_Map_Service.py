@@ -48,7 +48,7 @@ with col2:
 
     # Layer toggles
     show_pipeline = st.checkbox("Show Petroleum Pipelines", value=True)
-    show_tribal = st.checkbox("Show Tribal Lands", value=True)
+    show_tribal = st.checkbox("Show Federally Recognized Tribal Lands", value=True)
 
     # Intersection opacity control
     intersection_opacity = st.slider(
@@ -65,6 +65,7 @@ with col2:
         Where do you notice pipelines overlapping with Tribal lands?  
         What might be some historical, environmental, or legal contexts for 
         these regions of intersection?
+        What data is missing from this map, and why might that matter?
         """
     )
 
@@ -74,7 +75,7 @@ with col2:
         **Data Sources**  
         - **Pipelines:** U.S. Energy Information Administration  
           ([Open Energy Hub](https://openenergyhub.ornl.gov/explore/dataset/petroleumproduct_pipelines_us_eia/information/))  
-        - **Tribal Lands:** Bureau of Indian Affairs  
+        - **Federally Recognized Tribal Lands:** Bureau of Indian Affairs  
           ([American Conservation and Stewardship Atlas](https://services.arcgis.com/U7I2hMhPtOeGx0fs/arcgis/rest/services/Land_Areas_of_Federally_Recognized_Tribes/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson))  
 
         *These datasets are for educational and illustrative use only.*
