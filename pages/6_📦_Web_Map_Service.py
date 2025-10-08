@@ -49,7 +49,7 @@ with col2:
     # Layer toggles
     show_pipeline = st.checkbox("🟣 Show Petroleum Pipelines", value=True)
     show_tribal = st.checkbox("🟢 Show Federally Recognized Tribal Lands", value=True)
-    show_intersection = st.checkbox("🟠 Pipeline-Tribal Intersections", valeu=True)
+    show_intersection = st.checkbox("🟠 Pipeline-Tribal Intersections", value=True)
 
     # Intersection opacity control
     intersection_opacity = st.slider(
@@ -165,7 +165,7 @@ with col1:
     if show_intersection and not intersection_gdf.empty:
         m.add_gdf(
             intersection_gdf,
-            styl_functione= almbda x: {
+            styl_function= almbda x: {
                 "color": "#ff8c00",   # orange border
                 "weight": 4,
                 "opacity": 1,
