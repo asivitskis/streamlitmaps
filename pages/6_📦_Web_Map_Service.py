@@ -40,6 +40,14 @@ col1, col2 = st.columns([4, 1])
 with col2:
     st.subheader("Map Settings")
 
+    st.markdown(
+        """
+        # Explore the Map
+        - Use the checkboxes below to toggle layers  
+        - Hover over pipelines or lands to view attributes   
+        """
+    )
+
     # Basemap control
     options = list(leafmap.basemaps.keys())
     default_basemap = "CartoDB.VoyagerLabelsUnder"
@@ -47,19 +55,9 @@ with col2:
     basemap_choice = st.selectbox("Select a basemap:", options, index)
 
     # Layer toggles
-    show_pipeline = st.checkbox("🟣 Show Petroleum Pipelines", value=True)
-    show_tribal = st.checkbox("🟢 Show Federally Recognized Tribal Lands", value=True)
-    show_intersection = st.checkbox("🟠 Pipeline-Tribal Intersections", value=True)
-
-    # Intersection opacity control
-    intersection_opacity = st.slider(
-        "Intersection Layer Opacity",
-        min_value=0.0,
-        max_value=1.0,
-        value=0.3,
-        step=0.1,
-        help="Adjust how visible the intersection areas appear on the map.",
-    )
+    show_pipeline = st.checkbox("Show Petroleum Pipelines", value=True)
+    show_tribal = st.checkbox("Show Federally Recognized Tribal Lands", value=True)
+    show_intersection = st.checkbox("Pipeline-Tribal Intersections", value=True)
 
     st.markdown(
         """
@@ -75,9 +73,9 @@ with col2:
     st.markdown(
         """
         **Data Sources**  
-        - 🟣 **Pipelines:** U.S. Energy Information Administration  
+        - **Pipelines:** U.S. Energy Information Administration  
           ([Open Energy Hub](https://openenergyhub.ornl.gov/explore/dataset/petroleumproduct_pipelines_us_eia/information/))  
-        - 🟢 **Federally Recognized Tribal Lands:** Bureau of Indian Affairs  
+        - **Federally Recognized Tribal Lands:** Bureau of Indian Affairs  
           ([American Conservation and Stewardship Atlas](https://services.arcgis.com/U7I2hMhPtOeGx0fs/arcgis/rest/services/Land_Areas_of_Federally_Recognized_Tribes/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson))  
 
         *These datasets are for educational and illustrative use only.*
@@ -126,15 +124,7 @@ intersection_gdf = compute_intersections(pipeline_gdf, tribal_gdf)
 # Map rendering
 # -------------------------------------------------------------------
 with col1:
-    st.markdown(
-        """
-        ### 🔍 Explore the Map
-        - Use the checkboxes on the right to toggle layers  
-        - Hover over pipelines or lands to view attributes  
-        - Adjust intersection opacity to highlight overlap areas  
-        """
-    )
-
+    
     m = leafmap.Map(center=[40, -100], zoom=4)
 
     pipeline_style = {"color": "#b95eff", "weight": 1, "opacity": 0.8}
@@ -182,9 +172,9 @@ with col1:
         )
 
     legend_dict = {
-        "🟣 Pipelines": "#b95eff",
-        "🟢 Tribal Lands": "#00704A",
-        "🟠 Intersections": "#ff8c00",
+        "Pipelines": "#b95eff",
+        "Tribal Lands": "#00704A",
+        "Intersections": "#ff8c00",
     }
 
     m.add_legend(title="Map Key", legend_dict=legend_dict, position="bottomright")
