@@ -43,15 +43,35 @@ index = options.index(default_basemap)
 with col2:
     basemap_choice = st.selectbox("Select a basemap:", options, index)
 
-    #Toggle to show or hide layers
+    # Toggle to show or hide Tribal layers
     show_tribal = st.checkbox("Show Federally Recognized Tribal Lands", value=True)
-    
+
+    # Description
     st.markdown(
         """
-        Use the dropdown above to switch basemaps.  
-        Hover over **pipelines** to see operator details.  
-        The **intersection layer** highlights where pipelines overlap 
-        with Tribal lands.
+        Data source: **U.S. Bureau of Indian Affairs (BIA)** via the  
+        *American Conservation and Stewardship Atlas*  
+        ([GeoJSON link](https://services.arcgis.com/U7I2hMhPtOeGx0fs/arcgis/rest/services/Land_Areas_of_Federally_Recognized_Tribes/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson))  
+
+        This dataset represents **federally recognized Tribal land areas**, including 
+        reservations, trust lands, and dependent communities.It is suitable for **educational and illustrative purposes only** and does not 
+        define legal or jurisdictional boundaries. 
+        """
+    )
+
+    # Toggle to show or hide Pipeline layers
+    show_pipeline = st.checkbox("Show U.S. Major Petroleum Pipelines", value=True)
+
+    # Description
+    st.markdown(
+        """
+        Data source: **U.S. Bureau of Indian Affairs (BIA)** via the  
+        *American Conservation and Stewardship Atlas*  
+        ([GeoJSON link](https://services.arcgis.com/U7I2hMhPtOeGx0fs/arcgis/rest/services/Land_Areas_of_Federally_Recognized_Tribes/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson))  
+
+        This dataset represents **federally recognized Tribal land areas**, including 
+        reservations, trust lands, and dependent communities.It is suitable for **educational and illustrative purposes only** and does not 
+        define legal or jurisdictional boundaries. 
         """
     )
 
@@ -109,7 +129,13 @@ with col1:
     intersection_hover = {"color": "red", "weight": 3, "opacity": 1}
 
     # Add layers
-    m.add_gdf(pipeline_gdf, style=pipeline_style, hover_style=pipeline_hover, layer_name="Pipelines")
+    if show_pipeline:
+        m.add_gdf(
+            pipeline_gdf, 
+            style=pipeline_style, 
+            hover_style=pipeline_hover, 
+            layer_name="Pipelines"
+        )
 
     if show_tribal:
         m.add_gdf(
