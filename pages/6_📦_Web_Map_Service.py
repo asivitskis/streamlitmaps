@@ -42,7 +42,6 @@ with col2:
 
     st.markdown(
         """
-        # Explore the Map
         - Use the checkboxes below to toggle layers  
         - Hover over pipelines or lands to view attributes   
         """
@@ -138,6 +137,11 @@ with col1:
     }
     tribal_hover = {"color": "#004d33", "weight": 2, "fillOpacity": 0.3}
 
+    intersection_style = { "color": "#ff8c00", # orange border 
+                          "weight": 4, 
+                          "opacity": 1, 
+                          "fillColor": "#ffa500", 
+                          }
     intersection_hover = {"color": "red", "weight": 5, "opacity": 1}
 
     # Add layers
@@ -160,13 +164,7 @@ with col1:
     if show_intersection and not intersection_gdf.empty:
         m.add_gdf(
             intersection_gdf,
-            style_function=lambda x: {
-                "color": "#ff8c00",
-                "weight": 4,
-                "opacity": 1,
-                "fillColor": "#ffa500",
-                "fillOpacity": intersection_opacity,
-            },
+            style=intersection_style,
             hover_style=intersection_hover,
             layer_name="Pipeline-Tribal Intersections",
         )
