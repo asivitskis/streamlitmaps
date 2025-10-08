@@ -25,8 +25,8 @@ st.markdown(
     - Explore public geospatial data with transparency  
     - Foster inquiry and discussion around environmental justice and sovereignty  
 
-    *Note: All data are for illustrative purposes only and should not be used for 
-    legal or jurisdictional decisions.*
+    *Note: All data are for illustrative and educational purposes only. For any decision-making or consultation, 
+    authoritative data from Tribal governments should be used.*
     """
 )
 
