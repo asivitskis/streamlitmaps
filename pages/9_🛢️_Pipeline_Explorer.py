@@ -50,10 +50,9 @@ with col2:
     st.markdown(
         """
         Data source: **U.S. Bureau of Indian Affairs (BIA)** via the  
-        *American Conservation and Stewardship Atlas*  
-        ([GeoJSON link](https://services.arcgis.com/U7I2hMhPtOeGx0fs/arcgis/rest/services/Land_Areas_of_Federally_Recognized_Tribes/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson))  
+        [American Conservation and Stewardship Atlas](https://services.arcgis.com/U7I2hMhPtOeGx0fs/arcgis/rest/services/Land_Areas_of_Federally_Recognized_Tribes/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson))  
 
-        This dataset represents **federally recognized Tribal land areas**, including 
+        This dataset represents federally recognized Tribal land areas, including 
         reservations, trust lands, and dependent communities.It is suitable for **educational and illustrative purposes only** and does not 
         define legal or jurisdictional boundaries. 
         """
@@ -65,13 +64,11 @@ with col2:
     # Description
     st.markdown(
         """
-        Data source: **U.S. Bureau of Indian Affairs (BIA)** via the  
-        *American Conservation and Stewardship Atlas*  
-        ([GeoJSON link](https://services.arcgis.com/U7I2hMhPtOeGx0fs/arcgis/rest/services/Land_Areas_of_Federally_Recognized_Tribes/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson))  
+        Data source: **U.S. Energy Information Administration** via the  
+        [U.S. Energy Atlas](https://openenergyhub.ornl.gov/explore/dataset/petroleumproduct_pipelines_us_eia/information/)    
 
-        This dataset represents **federally recognized Tribal land areas**, including 
-        reservations, trust lands, and dependent communities.It is suitable for **educational and illustrative purposes only** and does not 
-        define legal or jurisdictional boundaries. 
+        This dataset identifyies the major petroleum product pipelines in the United States. It is based on publicly 
+        available data and was last updated in January 2020. 
         """
     )
 
