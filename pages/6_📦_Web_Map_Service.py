@@ -15,7 +15,7 @@ st.markdown(
     **federally recognized Tribal lands**.  
 
     This tool seeks to honor the work of [Tribal Nations Maps](https://tribalnationsmaps.com/), 
-    whose cartographic and educational efforts highlight where proposed pipelines intersect with tribal
+    whose cartographic and educational efforts highlight where proposed pipelines intersect with Tribal
     homelands of over 1900 nations.  
 
     The goal here is to offer an **open-source, dynamic platform** to help 
@@ -58,15 +58,15 @@ with col2:
         max_value=1.0,
         value=0.3,
         step=0.1,
-        help="Adjust how visible the intersection areas appear on the map."
+        help="Adjust how visible the intersection areas appear on the map.",
     )
 
     st.markdown(
         """
-        **Inquiry prompt:**  
+        **Inquiry Prompt:**  
         Where do you notice pipelines overlapping with Tribal lands?  
         What might be some historical, environmental, or legal contexts for 
-        these regions of intersection?
+        these regions of intersection?  
         What data is missing from this map, and why might that matter?
         """
     )
@@ -75,9 +75,9 @@ with col2:
     st.markdown(
         """
         **Data Sources**  
-        - **Pipelines:** U.S. Energy Information Administration  
+        - 🟣 **Pipelines:** U.S. Energy Information Administration  
           ([Open Energy Hub](https://openenergyhub.ornl.gov/explore/dataset/petroleumproduct_pipelines_us_eia/information/))  
-        - **Federally Recognized Tribal Lands:** Bureau of Indian Affairs  
+        - 🟢 **Federally Recognized Tribal Lands:** Bureau of Indian Affairs  
           ([American Conservation and Stewardship Atlas](https://services.arcgis.com/U7I2hMhPtOeGx0fs/arcgis/rest/services/Land_Areas_of_Federally_Recognized_Tribes/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson))  
 
         *These datasets are for educational and illustrative use only.*
@@ -134,13 +134,18 @@ with col1:
         - Adjust intersection opacity to highlight overlap areas  
         """
     )
-    
+
     m = leafmap.Map(center=[40, -100], zoom=4)
 
     pipeline_style = {"color": "#b95eff", "weight": 1, "opacity": 0.8}
     pipeline_hover = {"color": "#000000", "weight": 3, "opacity": 1}
 
-    tribal_style = {"color": "#00704A", "fillColor": "#00704A", "fillOpacity": 0.2, "weight": 1}
+    tribal_style = {
+        "color": "#00704A",
+        "fillColor": "#00704A",
+        "fillOpacity": 0.2,
+        "weight": 1,
+    }
     tribal_hover = {"color": "#004d33", "weight": 2, "fillOpacity": 0.3}
 
     intersection_hover = {"color": "red", "weight": 5, "opacity": 1}
@@ -165,8 +170,8 @@ with col1:
     if show_intersection and not intersection_gdf.empty:
         m.add_gdf(
             intersection_gdf,
-            styl_function= almbda x: {
-                "color": "#ff8c00",   # orange border
+            style_function=lambda x: {
+                "color": "#ff8c00",
                 "weight": 4,
                 "opacity": 1,
                 "fillColor": "#ffa500",
@@ -177,17 +182,12 @@ with col1:
         )
 
     legend_dict = {
-        "Pipelines": "#a11998",
-        "Tribal Lands": "#00704A",
-        "Pipeline-Tribal Intersections": "orange",
+        "🟣 Pipelines": "#b95eff",
+        "🟢 Tribal Lands": "#00704A",
+        "🟠 Intersections": "#ff8c00",
     }
 
-    m.add_legend(
-        title="Map Key",
-        legend_dict=legend_dict,
-        position="bottomright"
-    )
-
+    m.add_legend(title="Map Key", legend_dict=legend_dict, position="bottomright")
 
     m.add_basemap(basemap_choice)
     m.to_streamlit(height=700)
