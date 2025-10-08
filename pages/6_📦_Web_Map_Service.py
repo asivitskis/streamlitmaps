@@ -166,5 +166,18 @@ with col1:
             layer_name="Pipeline-Tribal Intersections",
         )
 
+    legend_dict = {
+        "Pipelines": "#a11998",
+        "Tribal Lands": "#00704A",
+        "Pipeline-Tribal Intersections": "orange",
+    }
+
+    m.add_legend(
+        title="Map Key",
+        legend_dict=legend_dict,
+        position="bottomright"
+    )
+
+
     m.add_basemap(basemap_choice)
     m.to_streamlit(height=700)
