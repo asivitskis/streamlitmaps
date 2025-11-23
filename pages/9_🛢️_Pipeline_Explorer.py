@@ -12,20 +12,10 @@ st.title("Pipeline Explorer: Interactive Demo")
 st.markdown(
     """
     An interactive web map for exploring **U.S. petroleum product pipelines** and 
-    **federally recognized Tribal lands**.  
-
-    This tool seeks to honor the work of [Tribal Nations Maps](https://tribalnationsmaps.com/), 
-    whose cartographic and educational efforts highlight where proposed pipelines intersect with Tribal
-    homelands of over 1900 nations.  
-
-    The goal here is to offer an **open-source, dynamic platform** to help 
-    educators, students, and communities:
-    - Visualize where active petroleum pipelines and Tribal lands intersect  
-    - Explore open-source geospatial data critically and transparently  
-    - Foster inquiry and reflection around environmental justice and sovereignty  
-
-    *Note: All data are for illustrative and educational purposes only. For any decision-making or consultation, 
-    authoritative data from Tribal governments should be used.*
+    **federally recognized Tribal lands**. This tool seeks to honor the work of [Tribal Nations Maps](https://tribalnationsmaps.com/), 
+    whose cartographic efforts highlight where proposed pipelines intersect with Tribal homelands of over 1900 nations.
+    The goal here is to offer an **open-source, dynamic platform** to help educators, students, and communities 
+    visualize and explore data for critical reflection around environmental justice and sovereignty.  
     """
 )
 
@@ -189,5 +179,9 @@ st.info(
     - What regions show the most overlap between pipelines and Tribal lands?  
     - What might these intersections mean for sovereignty and environmental safety?  
     - What additional data could make this map more complete or just?  
+
+    *Note: All data are for illustrative and educational purposes only. For any decision-making or consultation, 
+    authoritative data from Tribal governments should be used.*
+    
     """
 )
