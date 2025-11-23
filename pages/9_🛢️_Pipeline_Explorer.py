@@ -173,8 +173,7 @@ st.info(
         - **Pipelines:** U.S. Energy Information Administration  
           ([Open Energy Hub](https://openenergyhub.ornl.gov/explore/dataset/petroleumproduct_pipelines_us_eia/information/))  
         - **Federally Recognized Tribal Lands:** Bureau of Indian Affairs  
-          ([American Conservation and Stewardship Atlas](https://services.arcgis.com/U7I2hMhPtOeGx0fs/arcgis/rest/services/Land_Areas_of_Federally_Recognized_Tribes/
-          FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson)) 
+          ([American Conservation and Stewardship Atlas](https://services.arcgis.com/U7I2hMhPtOeGx0fs/arcgis/rest/services/Land_Areas_of_Federally_Recognized_Tribes/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson)) 
     
     *Note: All data are for illustrative and educational purposes only. **Intersections** shown here represent spatial overlaps between publicly available federal 
     datasets of pipeline routes and federally recognized Tribal land areas. They are meant to illustrate proximity and patterns, not to assert any claims about
