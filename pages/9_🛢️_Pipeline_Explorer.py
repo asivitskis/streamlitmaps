@@ -50,26 +50,15 @@ with col2:
 
     st.markdown(
         """
-        **Inquiry Prompt:**  
-        Where do you notice pipelines overlapping with Tribal lands?  
-        What might be some historical, environmental, or legal contexts for 
-        these regions of intersection?  
-        What data is missing from this map, and why might that matter?
+        **Inquiry Prompts:**  
+        * Where do you notice pipelines overlapping with Tribal lands?  
+        * What might be some historical, environmental, or legal contexts for 
+            these regions of intersection?  
+        * What data is missing from this map, and why might that matter?
         """
     )
 
     st.markdown("---")
-    st.markdown(
-        """
-        **Data Sources**  
-        - **Pipelines:** U.S. Energy Information Administration  
-          ([Open Energy Hub](https://openenergyhub.ornl.gov/explore/dataset/petroleumproduct_pipelines_us_eia/information/))  
-        - **Federally Recognized Tribal Lands:** Bureau of Indian Affairs  
-          ([American Conservation and Stewardship Atlas](https://services.arcgis.com/U7I2hMhPtOeGx0fs/arcgis/rest/services/Land_Areas_of_Federally_Recognized_Tribes/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson))  
-
-        *These datasets are for educational and illustrative use only.*
-        """
-    )
 
 # -------------------------------------------------------------------
 # Load data
@@ -180,6 +169,13 @@ st.info(
     - What might these intersections mean for sovereignty and environmental safety?  
     - What additional data could make this map more complete or just?  
 
+     **Data Sources**  
+        - **Pipelines:** U.S. Energy Information Administration  
+          ([Open Energy Hub](https://openenergyhub.ornl.gov/explore/dataset/petroleumproduct_pipelines_us_eia/information/))  
+        - **Federally Recognized Tribal Lands:** Bureau of Indian Affairs  
+          ([American Conservation and Stewardship Atlas](https://services.arcgis.com/U7I2hMhPtOeGx0fs/arcgis/rest/services/Land_Areas_of_Federally_Recognized_Tribes/
+          FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson)) 
+    
     *Note: All data are for illustrative and educational purposes only. For any decision-making or consultation, 
     authoritative data from Tribal governments should be used.*
     
