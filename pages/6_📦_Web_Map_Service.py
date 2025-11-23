@@ -12,20 +12,10 @@ st.title("Pipeline Explorer: Interactive Demo")
 st.markdown(
     """
     An interactive web map for exploring **U.S. petroleum product pipelines** and 
-    **federally recognized Tribal lands**.  
-
-    This tool seeks to honor the work of [Tribal Nations Maps](https://tribalnationsmaps.com/), 
-    whose cartographic and educational efforts highlight where proposed pipelines intersect with Tribal
-    homelands of over 1900 nations.  
-
-    The goal here is to offer an **open-source, dynamic platform** to help 
-    educators, students, and communities:
-    - Visualize where active petroleum pipelines and Tribal lands intersect  
-    - Explore open-source geospatial data critically and transparently  
-    - Foster inquiry and reflection around environmental justice and sovereignty  
-
-    *Note: All data are for illustrative and educational purposes only. For any decision-making or consultation, 
-    authoritative data from Tribal governments should be used.*
+    **federally recognized Tribal lands**. This tool seeks to honor the work of [Tribal Nations Maps](https://tribalnationsmaps.com/), 
+    whose cartographic efforts highlight where proposed pipelines intersect with Tribal homelands of over 1900 nations.
+    The goal here is to offer an **open-source, dynamic platform** to help educators, students, and communities 
+    visualize and explore data for critical reflection around environmental justice and sovereignty.  
     """
 )
 
@@ -60,33 +50,22 @@ with col2:
 
     st.markdown(
         """
-        **Inquiry Prompt:**  
-        Where do you notice pipelines overlapping with Tribal lands?  
-        What might be some historical, environmental, or legal contexts for 
-        these regions of intersection?  
-        What data is missing from this map, and why might that matter?
+        **Inquiry Prompts:**  
+        * Where do you notice pipelines overlapping with Tribal lands?  
+        * What might be some historical, environmental, or legal contexts for 
+            these regions of intersection?  
+        * What data is missing from this map, and why might that matter?
         """
     )
 
     st.markdown("---")
-    st.markdown(
-        """
-        **Data Sources**  
-        - **Pipelines:** U.S. Energy Information Administration  
-          ([Open Energy Hub](https://openenergyhub.ornl.gov/explore/dataset/petroleumproduct_pipelines_us_eia/information/))  
-        - **Federally Recognized Tribal Lands:** Bureau of Indian Affairs  
-          ([American Conservation and Stewardship Atlas](https://services.arcgis.com/U7I2hMhPtOeGx0fs/arcgis/rest/services/Land_Areas_of_Federally_Recognized_Tribes/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson))  
-
-        *These datasets are for educational and illustrative use only.*
-        """
-    )
 
 # -------------------------------------------------------------------
 # Load data
 # -------------------------------------------------------------------
 pipeline_url = (
-    "https://openenergyhub.ornl.gov/api/explore/v2.1/catalog/datasets/"
-    "petroleumproduct_pipelines_us_eia/exports/geojson"
+    "https://services2.arcgis.com/FiaPA4ga0iQKduv3/arcgis/rest/services/Crude_Oil_Trunk_Pipelines_1/"
+    "FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson"
 )
 tribal_url = (
     "https://services.arcgis.com/U7I2hMhPtOeGx0fs/arcgis/rest/services/"
@@ -189,5 +168,17 @@ st.info(
     - What regions show the most overlap between pipelines and Tribal lands?  
     - What might these intersections mean for sovereignty and environmental safety?  
     - What additional data could make this map more complete or just?  
+
+     **Data Sources**  
+        - **Pipelines:** U.S. Energy Information Administration  
+          ([Open Energy Hub](https://openenergyhub.ornl.gov/explore/dataset/petroleumproduct_pipelines_us_eia/information/))  
+        - **Federally Recognized Tribal Lands:** Bureau of Indian Affairs  
+          ([American Conservation and Stewardship Atlas](https://services.arcgis.com/U7I2hMhPtOeGx0fs/arcgis/rest/services/Land_Areas_of_Federally_Recognized_Tribes/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson)) 
+    
+    *Note: All data are for illustrative and educational purposes only. **Intersections** shown here represent spatial overlaps between publicly available federal 
+    datasets of pipeline routes and federally recognized Tribal land areas. They are meant to illustrate proximity and patterns, not to assert any claims about
+    land ownership, legal authority, or environmental impact. For any decision-making or consultation, 
+    authoritative data from Tribal governments should be used.*
+    
     """
 )
