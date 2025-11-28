@@ -64,8 +64,8 @@ with col2:
 # Load data
 # -------------------------------------------------------------------
 pipeline_url = (
-    "https://openenergyhub.ornl.gov/api/explore/v2.1/catalog/datasets/"
-    "petroleumproduct_pipelines_us_eia/exports/geojson"
+    "https://services2.arcgis.com/FiaPA4ga0iQKduv3/arcgis/rest/services/Crude_Oil_Trunk_Pipelines_1/"
+    "FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson"
 )
 tribal_url = (
     "https://services.arcgis.com/U7I2hMhPtOeGx0fs/arcgis/rest/services/"
