@@ -81,7 +81,7 @@ def load_data():
     tribal_gdf = tribal_gdf.to_crs(epsg=4326)
     return pipe_gdf, tribal_gdf
 
-pipeline_gdf, tribal_gdf = load_data(pipeline_url, tribal_url)
+pipeline_gdf, tribal_gdf = load_data()
 
 # -------------------------------------------------------------------
 # Compute intersections
