@@ -96,7 +96,7 @@ def compute_intersections(_pipe_gdf, _tribal_gdf):
         intersections = gpd.GeoDataFrame(geometry=[], crs=_pipe_gdf.crs)
     return intersections
 
-intersection_gdf = compute_intersections(pipeline_gdf, tribal_gdf)
+pipeline_gdf, tribal_gdf = load_data()
 
 # -------------------------------------------------------------------
 # Map rendering
