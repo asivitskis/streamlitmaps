@@ -88,7 +88,7 @@ def compute_intersections(_pipe_gdf, _tribal_gdf, pipeline_url):
         intersections = gpd.GeoDataFrame(geometry=[], crs=_pipe_gdf.crs)
     return intersections
 
-intersection_gdf = compute_intersections(pipeline_gdf, tribal_gdf)
+intersection_gdf = compute_intersections(pipeline_gdf, tribal_gdf, pipeline_url)
 
 # -------------------------------------------------------------------
 # Map rendering
