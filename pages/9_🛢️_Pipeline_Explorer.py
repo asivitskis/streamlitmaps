@@ -19,6 +19,7 @@ st.markdown(
     visualize and explore data for critical reflection around environmental justice and sovereignty.  
     """
 )
+st.set_page_config(layout="wide")
 
 # -------------------------------------------------------------------
 # Layout
