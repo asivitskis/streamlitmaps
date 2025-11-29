@@ -66,7 +66,7 @@ tribal_url = (
 )
 
 @st.cache_data(show_spinner=True)
-def load_data():
+def load_data(pipeline_url, tribal_url):
     pipe_gdf = gpd.read_file(pipeline_url)
     tribal_gdf = gpd.read_file(tribal_url)
     pipe_gdf = pipe_gdf.to_crs(epsg=4326)
