@@ -11,8 +11,8 @@ st.markdown(
     """
     An interactive web map for exploring **U.S. petroleum pipelines** and 
     **federally recognized Tribal lands**. This tool seeks to honor the work of [Tribal Nations Maps](https://tribalnationsmaps.com/) 
-    and [Native Land Information System](https://nativeland.info/dashboard/us-pipelines-and-hazardous-liquid-spills-2012-2020/)
-    whose cartographic efforts highlight where proposed pipelines intersect with Tribal homelands of over 1900 nations.
+    and [Native Lands Advocacy Project](https://nativeland.info/dashboard/us-pipelines-and-hazardous-liquid-spills-2012-2020/)
+    whose cartographic efforts highlight how proposed pipelines and hazardous spills relate to important Tribal Lands.
     The goal here is to offer an **open-source, dynamic platform** to help educators, students, and communities 
     visualize and explore data for critical reflection around environmental justice and sovereignty.  
     """
