@@ -11,8 +11,9 @@ st.title("Pipeline Explorer: Interactive Demo")
 
 st.markdown(
     """
-    An interactive web map for exploring **U.S. petroleum product pipelines** and 
-    **federally recognized Tribal lands**. This tool seeks to honor the work of [Tribal Nations Maps](https://tribalnationsmaps.com/), 
+    An interactive web map for exploring **U.S. petroleum pipelines** and 
+    **federally recognized Tribal lands**. This tool seeks to honor the work of [Tribal Nations Maps](https://tribalnationsmaps.com/) and [Native Land Information System]
+    (https://nativeland.info/dashboard/us-pipelines-and-hazardous-liquid-spills-2012-2020/)
     whose cartographic efforts highlight where proposed pipelines intersect with Tribal homelands of over 1900 nations.
     The goal here is to offer an **open-source, dynamic platform** to help educators, students, and communities 
     visualize and explore data for critical reflection around environmental justice and sovereignty.  
@@ -64,7 +65,7 @@ with col2:
 # Load data
 # -------------------------------------------------------------------
 pipeline_url = (
-    "https://openenergyhub.ornl.gov/api/explore/v2.1/catalog/datasets/petroleumproduct_pipelines_us_eia/exports/geojson"
+    "https://services2.arcgis.com/FiaPA4ga0iQKduv3/arcgis/rest/services/Crude_Oil_Trunk_Pipelines_1/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson"
 )
 tribal_url = (
     "https://services.arcgis.com/U7I2hMhPtOeGx0fs/arcgis/rest/services/"
@@ -73,20 +74,20 @@ tribal_url = (
 )
 
 @st.cache_data(show_spinner=True)
-def load_data():
+def load_data(pipeline_url, tribal_url):
     pipe_gdf = gpd.read_file(pipeline_url)
     tribal_gdf = gpd.read_file(tribal_url)
     pipe_gdf = pipe_gdf.to_crs(epsg=4326)
     tribal_gdf = tribal_gdf.to_crs(epsg=4326)
     return pipe_gdf, tribal_gdf
 
-pipeline_gdf, tribal_gdf = load_data()
+pipeline_gdf, tribal_gdf = load_data(pipeline_url, tribal_url)
 
 # -------------------------------------------------------------------
 # Compute intersections
 # -------------------------------------------------------------------
 @st.cache_data(show_spinner=True)
-def compute_intersections(_pipe_gdf, _tribal_gdf):
+def compute_intersections(_pipe_gdf, _tribal_gdf, pipeline_url):
     """Compute where pipelines intersect tribal land polygons."""
     try:
         intersections = gpd.overlay(_pipe_gdf, _tribal_gdf, how="intersection")
@@ -95,7 +96,7 @@ def compute_intersections(_pipe_gdf, _tribal_gdf):
         intersections = gpd.GeoDataFrame(geometry=[], crs=_pipe_gdf.crs)
     return intersections
 
-intersection_gdf = compute_intersections(pipeline_gdf, tribal_gdf)
+intersection_gdf = compute_intersections(pipeline_gdf, tribal_gdf, pipeline_url)
 
 # -------------------------------------------------------------------
 # Map rendering
@@ -170,7 +171,7 @@ st.info(
 
      **Data Sources**  
         - **Pipelines:** U.S. Energy Information Administration  
-          ([Open Energy Hub](https://openenergyhub.ornl.gov/explore/dataset/petroleumproduct_pipelines_us_eia/information/))  
+          ([ESRI U.S. Federal Datasets](https://hub.arcgis.com/datasets/fedmaps::crude-oil-trunk-pipelines-2/about))  
         - **Federally Recognized Tribal Lands:** Bureau of Indian Affairs  
           ([American Conservation and Stewardship Atlas](https://services.arcgis.com/U7I2hMhPtOeGx0fs/arcgis/rest/services/Land_Areas_of_Federally_Recognized_Tribes/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson)) 
     
@@ -178,6 +179,4 @@ st.info(
     datasets of pipeline routes and federally recognized Tribal land areas. They are meant to illustrate proximity and patterns, not to assert any claims about
     land ownership, legal authority, or environmental impact. For any decision-making or consultation, 
     authoritative data from Tribal governments should be used.*
-    
-    """
-)
+    )
