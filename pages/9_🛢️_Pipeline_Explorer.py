@@ -178,4 +178,5 @@ st.info(
     datasets of pipeline routes and federally recognized Tribal land areas. They are meant to illustrate proximity and patterns, not to assert any claims about
     land ownership, legal authority, or environmental impact. For any decision-making or consultation, 
     authoritative data from Tribal governments should be used.*
+    """
     )
