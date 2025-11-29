@@ -79,7 +79,7 @@ pipeline_gdf, tribal_gdf = load_data(pipeline_url, tribal_url)
 # Compute intersections
 # -------------------------------------------------------------------
 @st.cache_data(show_spinner=True)
-def compute_intersections(_pipe_gdf, _tribal_gdf):
+def compute_intersections(_pipe_gdf, _tribal_gdf, pipeline_url):
     """Compute where pipelines intersect tribal land polygons."""
     try:
         intersections = gpd.overlay(_pipe_gdf, _tribal_gdf, how="intersection")
