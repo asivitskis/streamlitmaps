@@ -143,11 +143,17 @@ with col1:
             layer_name="Pipeline-Tribal Intersections",
         )
 
-    legend_dict = {
-        "Pipelines": "#b95eff",
-        "Tribal Lands": "#00704A",
-        "Intersections": "#ff8c00",
-    }
+    if show_intersection and not intersection_gdf.empty:
+        legend_dict = {
+            "Pipelines": "#b95eff",
+            "Tribal Lands": "#00704A",
+            "Intersections": "#ff8c00",
+        }
+        else
+        legend_dict = {
+            "Pipelines": "#b95eff",
+            "Tribal Lands": "#00704A",
+        }
 
     m.add_legend(title="Map Key", legend_dict=legend_dict, position="bottomright")
 
