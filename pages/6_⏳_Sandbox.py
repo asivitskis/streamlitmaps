@@ -2,15 +2,22 @@ import streamlit as st
 import leafmap.foliumap as leafmap
 import geopandas as gpd
 
-st.title("Geospatial Sandbox")
+# -------------------------------------------------------------------
+# Title and description
+# -------------------------------------------------------------------
+st.title("Pipeline Explorer: Interactive Demo")
+
 st.markdown(
     """
-Testing Sandbox.
-"""
+    An interactive web map for exploring **U.S. petroleum pipelines** and 
+    **federally recognized Tribal lands**. This tool seeks to honor the work of [Tribal Nations Maps](https://tribalnationsmaps.com/) 
+    and [Native Lands Advocacy Project](https://nativeland.info/dashboard/us-pipelines-and-hazardous-liquid-spills-2012-2020/)
+    whose cartographic efforts highlight how proposed pipelines and hazardous spills relate to important Tribal Lands.
+    The goal here is to offer an **open-source, dynamic platform** to help educators, students, and communities 
+    visualize and explore data for critical reflection around environmental justice and sovereignty.  
+    """
 )
-
 st.set_page_config(layout="wide")
-
 
 # -------------------------------------------------------------------
 # Layout
@@ -25,8 +32,8 @@ with col2:
 
     st.markdown(
         """
-        - Use the checkboxes below to toggle layers  
-        - Hover over pipelines or lands to view attributes   
+        - Use the checkboxes below to calculate where pipelines currently intersect with Tribal Lands.
+        - Hover over pipelines or Land boundaries to view attributes.   
         """
     )
 
@@ -37,9 +44,7 @@ with col2:
     basemap_choice = st.selectbox("Select a basemap:", options, index)
 
     # Layer toggles
-    show_pipeline = st.checkbox("Show Petroleum Pipelines", value=True)
-    show_tribal = st.checkbox("Show Federally Recognized Tribal Lands", value=True)
-    show_intersection = st.checkbox("Pipeline-Tribal Intersections", value=True)
+    show_intersection = st.checkbox("Show Pipeline-Tribal Land Intersections", value=False)
 
     st.markdown(
         """
@@ -116,16 +121,14 @@ with col1:
     intersection_hover = {"color": "red", "weight": 5, "opacity": 1}
 
     # Add layers
-    if show_pipeline:
-        m.add_gdf(
+    m.add_gdf(
             pipeline_gdf,
             style=pipeline_style,
             hover_style=pipeline_hover,
             layer_name="Pipelines",
         )
 
-    if show_tribal:
-        m.add_gdf(
+    m.add_gdf(
             tribal_gdf,
             style=tribal_style,
             hover_style=tribal_hover,
@@ -163,7 +166,7 @@ st.info(
 
      **Data Sources**  
         - **Pipelines:** U.S. Energy Information Administration  
-          ([Open Energy Hub](https://openenergyhub.ornl.gov/explore/dataset/petroleumproduct_pipelines_us_eia/information/))  
+          ([ESRI U.S. Federal Datasets](https://hub.arcgis.com/datasets/fedmaps::crude-oil-trunk-pipelines-2/about))  
         - **Federally Recognized Tribal Lands:** Bureau of Indian Affairs  
           ([American Conservation and Stewardship Atlas](https://services.arcgis.com/U7I2hMhPtOeGx0fs/arcgis/rest/services/Land_Areas_of_Federally_Recognized_Tribes/FeatureServer/0/query?outFields=*&where=1%3D1&f=geojson)) 
     
@@ -171,6 +174,5 @@ st.info(
     datasets of pipeline routes and federally recognized Tribal land areas. They are meant to illustrate proximity and patterns, not to assert any claims about
     land ownership, legal authority, or environmental impact. For any decision-making or consultation, 
     authoritative data from Tribal governments should be used.*
-    
     """
-)
+    )
