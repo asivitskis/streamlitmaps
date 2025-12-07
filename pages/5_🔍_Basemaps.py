@@ -41,7 +41,7 @@ st.markdown(
     .sidebar-instructions {
         font-size: 0.92rem;           /* readable but not overwhelming */
         line-height: 1.35;
-        color: #333333;
+        color: #cccccc;
         margin-bottom: 0.75rem;
     }
 
