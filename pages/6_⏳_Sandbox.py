@@ -143,13 +143,14 @@ with col1:
             layer_name="Pipeline-Tribal Intersections",
         )
 
+    # update legend based on layers
     if show_intersection and not intersection_gdf.empty:
         legend_dict = {
             "Pipelines": "#b95eff",
             "Tribal Lands": "#00704A",
             "Intersections": "#ff8c00",
         }
-        else
+    else:
         legend_dict = {
             "Pipelines": "#b95eff",
             "Tribal Lands": "#00704A",
