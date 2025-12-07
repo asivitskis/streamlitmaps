@@ -100,7 +100,7 @@ intersection_gdf = compute_intersections(pipeline_gdf, tribal_gdf, pipeline_url)
 # -------------------------------------------------------------------
 with col1:
     
-    m = leafmap.Map(center=[40, -100], zoom=8)
+    m = leafmap.Map(center=[40, -100], zoom=6)
 
     pipeline_style = {"color": "#b95eff", "weight": 1, "opacity": 0.8}
     pipeline_hover = {"color": "#000000", "weight": 3, "opacity": 1}
