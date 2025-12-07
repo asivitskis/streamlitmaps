@@ -16,8 +16,7 @@ st.markdown(
     The goal here is to offer an **open-source, dynamic platform** to help educators, students, and communities 
     visualize and explore data for critical reflection around environmental justice and sovereignty.  
 
-    Learn how to build this map using this [open-source Jupyter notebook](https://github.com/asivitskis/EarthInquiryLab/blob/main/
-    2%20-%20Pipeline%20Explorer%20with%20GeoPandas/EI2%20-%20Pipeline%20Explorer%20Lesson.ipynb)
+    Learn how to build this map using this [open-source Jupyter notebook](https://github.com/asivitskis/EarthInquiryLab/blob/main/2%20-%20Pipeline%20Explorer%20with%20GeoPandas/EI2%20-%20Pipeline%20Explorer%20Lesson.ipynb)
     """
 )
 st.set_page_config(layout="wide")
