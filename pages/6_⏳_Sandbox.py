@@ -20,43 +20,93 @@ st.markdown(
 st.set_page_config(layout="wide")
 
 # -------------------------------------------------------------------
+# Custom CSS for styling sidebar widgets
+# -------------------------------------------------------------------
+st.markdown(
+    """
+    <style>
+    /* ----- Larger CHECKBOX ----- */
+    input[type="checkbox"] {
+        transform: scale(1.3);        /* increase size */
+        margin-right: 8px;            /* padding for readability */
+    }
+
+    /* ----- Checkbox LABEL text ----- */
+    .stCheckbox label {
+        font-size: 1.05rem;           /* larger than body text */
+        font-weight: 500;
+    }
+
+    /* ----- Paragraph-style sidebar instructions ----- */
+    .sidebar-instructions {
+        font-size: 0.92rem;           /* readable but not overwhelming */
+        line-height: 1.35;
+        color: #cccccc;
+        margin-bottom: 0.75rem;
+    }
+
+    /* ----- Sidebar section titles (your subheaders) ----- */
+    section[data-testid="stSidebar"] .stMarkdown h3 {
+        font-size: 1.3rem;            /* slightly larger section titles */
+        font-weight: 650;
+        margin-bottom: 0.3rem;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+
+# -------------------------------------------------------------------
 # Layout
 # -------------------------------------------------------------------
 col1, col2 = st.columns([4, 1])
 
 # -------------------------------------------------------------------
-# Controls (sidebar)
+# Sidebar Layout
 # -------------------------------------------------------------------
 with col2:
-    st.subheader("Calculate Intersections")
+
+    # ===== 1. Main Analysis Section =====
+    st.markdown("### Calculate Intersections")
 
     st.markdown(
         """
-        - Use the checkbox below to calculate where pipelines currently intersect with Tribal Lands.
-        - Hover over pipelines or Land boundaries to view attributes.   
-        """
+        <div class="sidebar-instructions">
+            Use the checkbox below to calculate where pipelines currently 
+            overlap with federally recognized Tribal lands.
+            <br><br>
+            Hover over pipelines or land boundaries to view attributes.
+        </div>
+        """,
+        unsafe_allow_html=True
     )
-    # Layer toggles
-    show_intersection = st.checkbox("Show Pipeline-Tribal Land Intersections", value=False)
 
-    # Basemap control
-    options = list(leafmap.basemaps.keys())
-    default_basemap = "CartoDB.VoyagerLabelsUnder"
-    index = options.index(default_basemap) if default_basemap in options else 0
-    basemap_choice = st.selectbox("Select a basemap:", options, index)
+    show_intersection = st.checkbox(
+        "Show Pipeline–Tribal Land Intersections",
+        value=False
+    )
 
+    # ===== 2. Basemap Selection =====
+    st.markdown("### Map Settings")
 
-    st.markdown(
-        """
-        **Inquiry Prompts:**  
-        * Where do you notice pipelines overlapping with Tribal lands?  
-        * What might be some historical, environmental, or legal contexts for 
-            these regions of intersection?  
-        * What data is missing from this map, and why might that matter?
-        """
+    basemap_choice = st.selectbox(
+        "Select a basemap:",
+        list(leafmap.basemaps.keys()),
+        index=list(leafmap.basemaps.keys()).index("CartoDB.VoyagerLabelsUnder")
     )
 
     st.markdown("---")
+
+    # ===== 3. Inquiry Prompts (collapsible) =====
+    with st.expander("Inquiry Prompts"):
+        st.markdown(
+            """
+            - Where do you notice pipelines overlapping with Tribal lands?  
+            - What historical, environmental, or legal contexts might matter?  
+            - What data is missing from this map?
+            """
+        )
 
 # -------------------------------------------------------------------
 # Load data
