@@ -28,14 +28,16 @@ col1, col2 = st.columns([4, 1])
 # Controls (sidebar)
 # -------------------------------------------------------------------
 with col2:
-    st.subheader("Map Settings")
+    st.subheader("Calculate Intersections")
 
     st.markdown(
         """
-        - Use the checkboxes below to calculate where pipelines currently intersect with Tribal Lands.
+        - Use the checkbox below to calculate where pipelines currently intersect with Tribal Lands.
         - Hover over pipelines or Land boundaries to view attributes.   
         """
     )
+    # Layer toggles
+    show_intersection = st.checkbox("Show Pipeline-Tribal Land Intersections", value=False)
 
     # Basemap control
     options = list(leafmap.basemaps.keys())
@@ -43,8 +45,6 @@ with col2:
     index = options.index(default_basemap) if default_basemap in options else 0
     basemap_choice = st.selectbox("Select a basemap:", options, index)
 
-    # Layer toggles
-    show_intersection = st.checkbox("Show Pipeline-Tribal Land Intersections", value=False)
 
     st.markdown(
         """
