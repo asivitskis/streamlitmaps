@@ -126,6 +126,7 @@ with col1:
             style=pipeline_style,
             hover_style=pipeline_hover,
             layer_name="Pipelines",
+            zoom_to_layer=False,
         )
 
     m.add_gdf(
@@ -133,6 +134,7 @@ with col1:
             style=tribal_style,
             hover_style=tribal_hover,
             layer_name="Tribal Lands",
+            zoom_to_layer=False,
         )
 
     if show_intersection and not intersection_gdf.empty:
