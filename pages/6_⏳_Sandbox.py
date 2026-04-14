@@ -99,7 +99,7 @@ with col1:
             BRAT,
             layer_name="BRAT Dam Capacity",
             style_function=brat_style,
-            hover_style=hstyle,
+            info_mode="on_click",
             zoom_to_layer=False,
         )
 
