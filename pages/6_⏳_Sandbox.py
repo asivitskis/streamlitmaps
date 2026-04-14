@@ -90,6 +90,7 @@ with col1:
             basin,
             layer_name="HUC 10 Basin",
             style={"color": "black", "weight": 2, "fillOpacity": 0},
+            info_mode=None,
             zoom_to_layer=False,
         )
 
