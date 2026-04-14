@@ -53,6 +53,17 @@ with col2:
             """
         )
 
+    st.markdown("---")
+    with st.expander("About VBET"):
+        st.markdown(
+            """
+            The **Valley Bottom Extraction Tool (VBET)** uses a DEM 
+            and a channel area network to estimate valley bottom extents.  
+            
+            This can be used to define a Riverscape Network.
+            """
+        )
+
 # -------------------------------------------------------------------
 # Style helpers
 # -------------------------------------------------------------------
