@@ -52,8 +52,7 @@ with col2:
             `oCC_EX` = existing capacity in dams/km.
             """
         )
-
-    st.markdown("---")
+        
     with st.expander("About VBET"):
         st.markdown(
             """
