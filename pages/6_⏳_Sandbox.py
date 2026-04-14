@@ -13,8 +13,8 @@ st.set_page_config(layout="wide")
 # -------------------------------------------------------------------
 # Data URLs
 # -------------------------------------------------------------------
-hillshade = "https://github.com/asivitskis/EarthInquiryLab/raw/refs/heads/main/data/Elevation/hillshade_cog.tif"
-smoothed_dem = "https://github.com/asivitskis/EarthInquiryLab/raw/refs/heads/main/data/Elevation/smoothed_dem_cog.tif"
+# hillshade = "https://github.com/asivitskis/EarthInquiryLab/raw/refs/heads/main/data/Elevation/hillshade_cog.tif"
+# smoothed_dem = "https://github.com/asivitskis/EarthInquiryLab/raw/refs/heads/main/data/Elevation/smoothed_dem_cog.tif"
 basin = "https://raw.githubusercontent.com/asivitskis/EarthInquiryLab/refs/heads/main/data/Hydro_data/pa_HUC10_basin.geojson"
 BRAT = "https://raw.githubusercontent.com/asivitskis/EarthInquiryLab/main/data/PA_BRAT_2.geojson"
 
@@ -28,8 +28,8 @@ col1, col2 = st.columns([4, 1])
 # -------------------------------------------------------------------
 with col2:
     st.markdown("### Layer Controls")
-    show_dem     = st.checkbox("Smoothed DEM",        value=True)
-    show_hillshade = st.checkbox("Hillshade",         value=True)
+    # show_dem     = st.checkbox("Smoothed DEM",        value=True)
+    # show_hillshade = st.checkbox("Hillshade",         value=True)
     show_basin   = st.checkbox("HUC 10 Basin",        value=True)
     show_brat    = st.checkbox("BRAT Dam Capacity",   value=True)
 
@@ -78,12 +78,12 @@ with col1:
     m = leafmap.Map(center=[42.70, -108.883], zoom=10)
     m.add_basemap(basemap_choice)
 
-    if show_dem:
-        m.add_colormap(cmap="terrain", vmin=1500, vmax=4000, label="Elevation (m)", width=2)
-        m.add_cog_layer(smoothed_dem, name="Smoothed DEM", palette="terrain")
+    # if show_dem:
+    #     m.add_colormap(cmap="terrain", vmin=1500, vmax=4000, label="Elevation (m)", width=2)
+    #     m.add_cog_layer(smoothed_dem, name="Smoothed DEM", palette="terrain")
 
-    if show_hillshade:
-        m.add_cog_layer(hillshade, name="Hillshade COG", opacity=0.2)
+    # if show_hillshade:
+    #     m.add_cog_layer(hillshade, name="Hillshade COG", opacity=0.2)
 
     if show_basin:
         m.add_geojson(
@@ -105,10 +105,10 @@ with col1:
 
     # --- Dynamic legend ---
     legend_dict = {}
-    if show_dem:
-        legend_dict["Smoothed DEM"] = "#6a994e"
-    if show_basin:
-        legend_dict["HUC 10 Basin"] = "#000000"
+    # if show_dem:
+    #     legend_dict["Smoothed DEM"] = "#6a994e"
+    # if show_basin:
+    #     legend_dict["HUC 10 Basin"] = "#000000"
     if show_brat:
         legend_dict["None (0 dams/km)"]         = "#d7191c"
         legend_dict["Rare (< 1 dam/km)"]        = "#fdae61"
