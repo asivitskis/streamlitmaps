@@ -6,6 +6,7 @@ st.markdown(
     """
 This app is a demonstration of visualizing delineated stream network data generated with [WhiteboxTools](https://www.whiteboxgeo.com) and [leafmap](https://leafmap.org/). 
 Both open source python packages can support highly customizable geospatial applications.
+Additional model layers from [Riverscapes Data Exchange](https://www.riverscapes.net/feed) are included to explore how geospatial data can be used to inform river restoration planning.
 """
 )
 st.set_page_config(layout="wide")
@@ -34,6 +35,16 @@ with col2:
     show_basin   = st.checkbox("HUC 10 Basin",        value=True)
     show_brat    = st.checkbox("BRAT Dam Capacity",   value=True)
     show_vbet    = st.checkbox("VBET Stream Network", value=True)
+    
+    # ===== Inquiry Prompts (collapsible) =====
+    with st.expander("Inquiry Prompts"):
+        st.markdown(
+            """
+            - What areas might be suitable for BDA installment?  
+            - What evidence from Riverscape models could support this?  
+            """
+        )
+
     st.markdown("---")
     st.markdown("### Basemap")
     basemap_choice = st.selectbox(
