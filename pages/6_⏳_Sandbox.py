@@ -52,7 +52,7 @@ with col2:
             `oCC_EX` = existing capacity in dams/km.
             """
         )
-        
+
     with st.expander("About VBET"):
         st.markdown(
             """
@@ -141,7 +141,7 @@ with col1:
         legend_dict["Pervasive (> 15 dams/km)"] = "#2b83ba"
 
     if show_vbet:
-        legend_dict["Valley Bottom (VBET)"] = "#2aae3c"
+        legend_dict["Valley Bottom (VBET)"] = "#4a90d9"
 
     if legend_dict:
         m.add_legend(title="Map Key", legend_dict=legend_dict, position="bottomright")
