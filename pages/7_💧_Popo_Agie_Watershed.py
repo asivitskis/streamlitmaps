@@ -19,6 +19,20 @@ BRAT = "https://raw.githubusercontent.com/asivitskis/EarthInquiryLab/main/data/P
 
 hstyle = {"color": "black", "weight": 3, "opacity": 1}
 
+def brat_style(feature):
+    val = feature.get("properties", {}).get("oCC_EX", 0) or 0
+    if val <= 0:
+        color = "#d7191c"   # None
+    elif val < 1:
+        color = "#fdae61"   # Rare
+    elif val < 5:
+        color = "#ffffbf"   # Occasional
+    elif val < 15:
+        color = "#a6d96a"   # Frequent
+    else:
+        color = "#2b83ba"   # Pervasive
+    return {"color": color, "weight": 2, "opacity": 0.9}
+
 m = leafmap.Map(center=[42.70, -108.883], zoom=10)
 m.add_basemap("SATELLITE")
 m.add_colormap(cmap="terrain", vmin=1500, vmax=4000, label="Elevation (m)", width=2)
@@ -42,7 +56,7 @@ m.add_geojson(
 m.add_geojson(
     BRAT,
     layer_name="BRAT Delineation",
-    style={"color": "#00ff00", "weight": 2},
+    style_function=brat_style,
     hover_style=hstyle,
     zoom_to_layer=False,
 )
