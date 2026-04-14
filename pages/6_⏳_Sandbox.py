@@ -109,7 +109,7 @@ with col1:
             layer_name="Valley Bottom (VBET)",
             style={
                 "color": "#2aae3c",       # border
-                "weight": 1,
+                "weight": 0,
                 "fillColor": "#4a90d9",
                 "fillOpacity": 0.25,
             },
