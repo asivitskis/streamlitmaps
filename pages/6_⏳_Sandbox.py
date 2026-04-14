@@ -105,7 +105,7 @@ with col1:
         )
     if show_vbet:
         m.add_geojson(
-            vbet,
+            VBET,
             layer_name="Valley Bottom (VBET)",
             style={
                 "color": "#2aae3c",       # border
