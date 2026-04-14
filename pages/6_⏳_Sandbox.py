@@ -17,6 +17,7 @@ st.set_page_config(layout="wide")
 # smoothed_dem = "https://github.com/asivitskis/EarthInquiryLab/raw/refs/heads/main/data/Elevation/smoothed_dem_cog.tif"
 basin = "https://raw.githubusercontent.com/asivitskis/EarthInquiryLab/refs/heads/main/data/Hydro_data/pa_HUC10_basin.geojson"
 BRAT = "https://raw.githubusercontent.com/asivitskis/EarthInquiryLab/main/data/PA_BRAT_2.geojson"
+VBET = "https://raw.githubusercontent.com/asivitskis/EarthInquiryLab/main/data/PA_VBET_Simplified.geojson"
 
 # -------------------------------------------------------------------
 # Layout
@@ -32,7 +33,7 @@ with col2:
     # show_hillshade = st.checkbox("Hillshade",         value=True)
     show_basin   = st.checkbox("HUC 10 Basin",        value=True)
     show_brat    = st.checkbox("BRAT Dam Capacity",   value=True)
-
+    show_vbet    = st.checkbox("VBET Stream Network", value=True)
     st.markdown("---")
     st.markdown("### Basemap")
     basemap_choice = st.selectbox(
@@ -102,7 +103,20 @@ with col1:
             info_mode="on_click",
             zoom_to_layer=False,
         )
-
+    if show_vbet:
+        m.add_geojson(
+            vbet,
+            layer_name="Valley Bottom (VBET)",
+            style={
+                "color": "#2aae3c",       # border
+                "weight": 1,
+                "fillColor": "#4a90d9",
+                "fillOpacity": 0.25,
+            },
+            hover_style={"fillOpacity": 0.5, "weight": 2},
+            info_mode=None,
+            zoom_to_layer=False,
+        )
     # --- Dynamic legend ---
     legend_dict = {}
     # if show_dem:
@@ -115,6 +129,9 @@ with col1:
         legend_dict["Occasional (1–5 dams/km)"] = "#ffffbf"
         legend_dict["Frequent (5–15 dams/km)"]  = "#a6d96a"
         legend_dict["Pervasive (> 15 dams/km)"] = "#2b83ba"
+
+    if show_vbet:
+        legend_dict["Valley Bottom (VBET)"] = "#2aae3c"
 
     if legend_dict:
         m.add_legend(title="Map Key", legend_dict=legend_dict, position="bottomright")
