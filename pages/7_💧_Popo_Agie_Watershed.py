@@ -15,6 +15,8 @@ hillshade = "https://github.com/asivitskis/EarthInquiryLab/raw/refs/heads/main/d
 smoothed_dem = "https://github.com/asivitskis/EarthInquiryLab/raw/refs/heads/main/data/Elevation/smoothed_dem_cog.tif"
 basin = "https://raw.githubusercontent.com/asivitskis/EarthInquiryLab/refs/heads/main/data/Hydro_data/pa_HUC10_basin.geojson"
 streams = "https://raw.githubusercontent.com/asivitskis/EarthInquiryLab/main/data/Hydro_data/stream_network.geojson"
+BRAT = "https://raw.githubusercontent.com/asivitskis/EarthInquiryLab/main/data/PA_BRAT_2.geojson"
+
 hstyle = {"color": "black", "weight": 3, "opacity": 1}
 
 m = leafmap.Map(center=[42.70, -108.883], zoom=10)
@@ -29,10 +31,18 @@ m.add_geojson(
     info_mode="on_click",
     zoom_to_layer=False,
 )
+# m.add_geojson(
+#     streams,
+#     layer_name="Drainage Network",
+#     style={"color": "#ff2a00", "weight": 2},
+#     hover_style=hstyle,
+#     zoom_to_layer=False,
+# )
+
 m.add_geojson(
-    streams,
-    layer_name="Drainage Network",
-    style={"color": "#ff2a00", "weight": 2},
+    BRAT,
+    layer_name="BRAT Delineation",
+    style={"color": "#00ff00", "weight": 2},
     hover_style=hstyle,
     zoom_to_layer=False,
 )
