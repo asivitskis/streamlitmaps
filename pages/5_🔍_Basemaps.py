@@ -237,41 +237,47 @@ _TNC_BASE = (
     f"&geometry={_LAPAZ_BBOX}"
 )
 
-@st.cache_data(show_spinner="Loading mangrove change data…")
 def load_mangrove_change():
     """
     Query the TNC ArcGIS FeatureServer for mangrove gain/loss polygons
-    clipped to La Paz bay. Returns (gain_gdf, loss_gdf, used_fallback).
+    clipped to La Paz bay. Returns (gain_gdf, loss_gdf, used_fallback, diag_lines).
 
-    The service field that distinguishes gain from loss is 'change_typ'
-    (values: 'Gain' / 'Loss'). If the live service is unreachable the
-    function falls back to illustrative geometries.
+    Fires two requests (one per change_typ value). Falls back to illustrative
+    geometries on any error and returns diagnostic lines for display.
     """
+    diag = []
     try:
-        # Pull gains and losses in two requests to stay within record limits
         gdfs = []
         for change_val in ("Gain", "Loss"):
             where = f"change_typ='{change_val}'"
             url = _TNC_BASE + f"&where={requests.utils.quote(where)}"
+            diag.append(f"GET {change_val}: {url}")
             r = requests.get(url, timeout=20, headers={"User-Agent": "Mozilla/5.0"})
+            diag.append(f"  -> HTTP {r.status_code}")
             r.raise_for_status()
             payload = r.json()
-            if payload.get("features"):
+            # Surface ArcGIS-level errors (service returns 200 with error body)
+            if "error" in payload:
+                raise ValueError(f"ArcGIS error: {payload['error']}")
+            n = len(payload.get("features", []))
+            diag.append(f"  -> {n} features")
+            if n:
+                fields = list(payload["features"][0]["properties"].keys())
+                diag.append(f"  -> fields: {fields}")
                 gdfs.append(
                     (change_val, gpd.GeoDataFrame.from_features(payload["features"], crs="EPSG:4326"))
                 )
         if not gdfs:
-            raise ValueError("No features returned for La Paz bay")
+            raise ValueError("No features returned for La Paz bay bbox")
         result = {label: gdf for label, gdf in gdfs}
-        gain_gdf = result.get("Gain", gpd.GeoDataFrame())
-        loss_gdf = result.get("Loss", gpd.GeoDataFrame())
-        return gain_gdf, loss_gdf, False
-    except Exception:
+        return result.get("Gain", gpd.GeoDataFrame()), result.get("Loss", gpd.GeoDataFrame()), False, diag
+    except Exception as exc:
+        diag.append(f"FAILED: {type(exc).__name__}: {exc}")
         gain_gdf = gpd.GeoDataFrame.from_features(MANGROVE_GAIN_FALLBACK["features"], crs="EPSG:4326")
         loss_gdf = gpd.GeoDataFrame.from_features(MANGROVE_LOSS_FALLBACK["features"], crs="EPSG:4326")
-        return gain_gdf, loss_gdf, True
+        return gain_gdf, loss_gdf, True, diag
 
-mangrove_gain_gdf, mangrove_loss_gdf, mangrove_fallback = load_mangrove_change()
+mangrove_gain_gdf, mangrove_loss_gdf, mangrove_fallback, mangrove_diag = load_mangrove_change()
 cabo_mpa_gdf, cabo_mpa_fallback = load_geojson_with_fallback(
     "https://raw.githubusercontent.com/opengeos/datasets/main/places/Cabo_Pulmo_NMP.geojson",
     CABO_MPA_FALLBACK,
@@ -286,6 +292,10 @@ if mangrove_fallback or cabo_mpa_fallback:
         "Swap in real GeoJSON URLs to load authoritative data.",
         icon="🗺️",
     )
+    if mangrove_fallback and mangrove_diag:
+        with st.sidebar.expander("🔍 Mangrove load diagnostics"):
+            for line in mangrove_diag:
+                st.code(line, language=None)
 
 # -------------------------------------------------------------------
 # Map center & zoom
