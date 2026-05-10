@@ -116,17 +116,6 @@ with st.sidebar:
 # -------------------------------------------------------------------
 # Fallback / illustrative GeoJSON
 # -------------------------------------------------------------------
-CABO_MPA_FALLBACK = {
-    "type": "FeatureCollection",
-    "features": [
-        {"type": "Feature",
-         "properties": {"name": "Cabo Pulmo National Marine Park", "status": "Designated 1995"},
-         "geometry": {"type": "Polygon", "coordinates": [[
-             [-109.880, 23.470], [-109.820, 23.500], [-109.770, 23.445],
-             [-109.800, 23.400], [-109.870, 23.410], [-109.880, 23.470]]]}}
-    ]
-}
-
 CABO_REEF_FALLBACK = {
     "type": "FeatureCollection",
     "features": [
@@ -192,6 +181,10 @@ MANGROVE_URL = (
     "https://raw.githubusercontent.com/asivitskis/EarthInquiryLab/"
     "main/data/bcs_coastal_ed_data/LP_TNC_mangrove.json"
 )
+CABO_MPA_URL = (
+    "https://raw.githubusercontent.com/asivitskis/EarthInquiryLab/"
+    "main/data/bcs_coastal_ed_data/CaboPulmo_Boundary_CONANP.json"
+)
 
 @st.cache_data(show_spinner="Loading spatial data…")
 def load_geojson_with_fallback(url, fallback_dict):
@@ -225,20 +218,9 @@ def mangrove_style_callback(feature):
     }
 
 mangrove_hover_style = {"weight": 2, "color": "yellow", "fillOpacity": 0.9}
-cabo_mpa_gdf, cabo_mpa_fallback = load_geojson_with_fallback(
-    "https://raw.githubusercontent.com/opengeos/datasets/main/places/Cabo_Pulmo_NMP.geojson",
-    CABO_MPA_FALLBACK,
-)
 harbor_gdf,    _ = load_geojson_with_fallback("", HARBOR_DEV_FALLBACK)
 reef_gdf,      _ = load_geojson_with_fallback("", CABO_REEF_FALLBACK)
 community_gdf, _ = load_geojson_with_fallback("", CABO_COMMUNITY_FALLBACK)
-
-if cabo_mpa_fallback:
-    st.sidebar.warning(
-        "Using illustrative geometry for the Cabo Pulmo MPA layer. "
-        "Swap in a real GeoJSON URL to load authoritative data.",
-        icon="🗺️",
-    )
 
 # -------------------------------------------------------------------
 # Map center & zoom
@@ -257,9 +239,6 @@ harbor_style    = {"color": "#993C1D", "fillColor": "#D85A30", "fillOpacity": 0.
 harbor_hover    = {"fillOpacity": 0.65, "weight": 2}
 lapaz_mpa_style = {"color": "#185FA5", "fillColor": "#378ADD", "fillOpacity": 0.08,
                    "weight": 2, "dashArray": "6 4"}
-cabo_mpa_style  = {"color": "#185FA5", "fillColor": "#378ADD", "fillOpacity": 0.10,
-                   "weight": 2, "dashArray": "6 4"}
-cabo_mpa_hover  = {"fillOpacity": 0.20, "weight": 3}
 reef_style      = {"color": "#BA7517", "fillColor": "#EF9F27", "fillOpacity": 0.60, "weight": 1}
 reef_hover      = {"fillOpacity": 0.80, "weight": 2}
 community_style = {"color": "#993556", "fillColor": "#D4537E", "fillOpacity": 0.55, "weight": 1}
@@ -299,8 +278,15 @@ if show_lapaz_mpa:
     legend_dict["La Paz biosphere reserve"] = "#378ADD"
 
 if show_cabo_mpa:
-    m.add_gdf(cabo_mpa_gdf, style=cabo_mpa_style, hover_style=cabo_mpa_hover,
-              layer_name="Marine park boundary", info_mode="on_hover", zoom_to_layer=False)
+    m.add_vector(
+        CABO_MPA_URL,
+        layer_name="Marine park boundary",
+        style={"color": "#185FA5", "fillColor": "#378ADD", "fillOpacity": 0.10,
+               "weight": 2, "dashArray": "6 4"},
+        hover_style={"fillOpacity": 0.25, "weight": 3},
+        info_mode="on_hover",
+        zoom_to_layer=False,
+    )
     legend_dict["Marine park boundary"] = "#378ADD"
 
 if show_reef:
