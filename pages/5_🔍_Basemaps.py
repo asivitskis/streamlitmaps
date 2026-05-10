@@ -212,7 +212,15 @@ def load_geojson_with_fallback(url, fallback_dict):
 def load_mangrove_geojson(url):
     r = requests.get(url, timeout=15)
     r.raise_for_status()
-    gdf = gpd.GeoDataFrame.from_features(r.json()["features"], crs="EPSG:4326")
+    features = r.json()["features"]
+    # Some TNC features have null or geometry-type-less entries — filter before
+    # passing to GeoPandas to avoid shapely crashing on a None geometry type
+    valid = [
+        f for f in features
+        if f.get("geometry") and f["geometry"].get("type")
+    ]
+    gdf = gpd.GeoDataFrame.from_features(valid, crs="EPSG:3857")
+    gdf = gdf.to_crs("EPSG:4326")
     return gdf
 
 mangrove_gdf = load_mangrove_geojson(MANGROVE_URL)
@@ -459,3 +467,4 @@ st.caption(
     "Illustrative layers derived from satellite imagery and published survey data. "
     "All data are for educational purposes only and should not be used for legal or decision-making purposes."
 )
+
