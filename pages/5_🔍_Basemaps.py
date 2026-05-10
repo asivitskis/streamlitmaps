@@ -71,14 +71,8 @@ with st.sidebar:
     if site_choice in ["Cabo Pulmo", "Compare both"]:
         st.markdown("### Cabo Pulmo layers")
         show_cabo_mpa  = st.checkbox("Marine park boundary", value=True)
-        show_reef      = st.checkbox("Reef habitat", value=True)
-        show_community = st.checkbox("Community settlement", value=True)
-        show_notake    = st.checkbox("No-take buffer zone", value=False)
     else:
         show_cabo_mpa  = False
-        show_reef      = False
-        show_community = False
-        show_notake    = False
 
     st.markdown("---")
     st.markdown("### Map settings")
@@ -104,7 +98,6 @@ with st.sidebar:
             """
             **Mangroves:** The Nature Conservancy (TNC) — clipped to the Port of La Paz area.  
             **Marine park:** CONANP / WDPA (Protected Planet).  
-            **Reef habitat:** Illustrative — based on published reef survey locations.  
             **Harbor development:** Illustrative — derived from satellite imagery.  
             **Community settlement:** Illustrative — approximate extent.  
 
@@ -116,20 +109,6 @@ with st.sidebar:
 # -------------------------------------------------------------------
 # Fallback / illustrative GeoJSON
 # -------------------------------------------------------------------
-CABO_REEF_FALLBACK = {
-    "type": "FeatureCollection",
-    "features": [
-        {"type": "Feature", "properties": {"name": "El Bajo reef"},
-         "geometry": {"type": "Polygon", "coordinates": [[
-             [-109.865, 23.445], [-109.845, 23.455], [-109.835, 23.448],
-             [-109.850, 23.438], [-109.865, 23.445]]]}},
-        {"type": "Feature", "properties": {"name": "Los Frailes reef"},
-         "geometry": {"type": "Polygon", "coordinates": [[
-             [-109.855, 23.462], [-109.840, 23.470], [-109.830, 23.465],
-             [-109.845, 23.456], [-109.855, 23.462]]]}},
-    ]
-}
-
 HARBOR_DEV_FALLBACK = {
     "type": "FeatureCollection",
     "features": [
@@ -144,17 +123,6 @@ HARBOR_DEV_FALLBACK = {
     ]
 }
 
-CABO_COMMUNITY_FALLBACK = {
-    "type": "FeatureCollection",
-    "features": [
-        {"type": "Feature",
-         "properties": {"name": "Cabo Pulmo village", "population": "~100 residents"},
-         "geometry": {"type": "Polygon", "coordinates": [[
-             [-109.875, 23.450], [-109.868, 23.455], [-109.862, 23.452],
-             [-109.868, 23.447], [-109.875, 23.450]]]}}
-    ]
-}
-
 LAPAZ_MPA_GEOJSON = {
     "type": "FeatureCollection",
     "features": [{"type": "Feature",
@@ -163,15 +131,6 @@ LAPAZ_MPA_GEOJSON = {
                       [-110.520, 24.280], [-110.350, 24.300], [-110.250, 24.100],
                       [-110.280, 24.040], [-110.450, 24.050], [-110.550, 24.150],
                       [-110.520, 24.280]]]}}]
-}
-
-NOTAKE_GEOJSON = {
-    "type": "FeatureCollection",
-    "features": [{"type": "Feature",
-                  "properties": {"name": "Cabo Pulmo no-take buffer (approx.)"},
-                  "geometry": {"type": "Polygon", "coordinates": [[
-                      [-109.870, 23.448], [-109.852, 23.456], [-109.842, 23.450],
-                      [-109.858, 23.442], [-109.870, 23.448]]]}}]
 }
 
 # -------------------------------------------------------------------
@@ -219,8 +178,6 @@ def mangrove_style_callback(feature):
 
 mangrove_hover_style = {"weight": 2, "color": "yellow", "fillOpacity": 0.9}
 harbor_gdf,    _ = load_geojson_with_fallback("", HARBOR_DEV_FALLBACK)
-reef_gdf,      _ = load_geojson_with_fallback("", CABO_REEF_FALLBACK)
-community_gdf, _ = load_geojson_with_fallback("", CABO_COMMUNITY_FALLBACK)
 
 # -------------------------------------------------------------------
 # Map center & zoom
@@ -228,7 +185,7 @@ community_gdf, _ = load_geojson_with_fallback("", CABO_COMMUNITY_FALLBACK)
 if site_choice == "La Paz harbor":
     center, zoom = [24.17, -110.36], 11
 elif site_choice == "Cabo Pulmo":
-    center, zoom = [23.455, -109.855], 12
+    center, zoom = [23.438124935783712, -109.42855096911228], 12
 else:
     center, zoom = [23.85, -110.10], 9
 
@@ -239,13 +196,6 @@ harbor_style    = {"color": "#993C1D", "fillColor": "#D85A30", "fillOpacity": 0.
 harbor_hover    = {"fillOpacity": 0.65, "weight": 2}
 lapaz_mpa_style = {"color": "#185FA5", "fillColor": "#378ADD", "fillOpacity": 0.08,
                    "weight": 2, "dashArray": "6 4"}
-reef_style      = {"color": "#BA7517", "fillColor": "#EF9F27", "fillOpacity": 0.60, "weight": 1}
-reef_hover      = {"fillOpacity": 0.80, "weight": 2}
-community_style = {"color": "#993556", "fillColor": "#D4537E", "fillOpacity": 0.55, "weight": 1}
-community_hover = {"fillOpacity": 0.75, "weight": 2}
-notake_style    = {"color": "#3B6D11", "fillColor": "#639922", "fillOpacity": 0.20,
-                   "weight": 1, "dashArray": "4 3"}
-
 # -------------------------------------------------------------------
 # Build map
 # -------------------------------------------------------------------
@@ -288,21 +238,6 @@ if show_cabo_mpa:
         zoom_to_layer=False,
     )
     legend_dict["Marine park boundary"] = "#378ADD"
-
-if show_reef:
-    m.add_gdf(reef_gdf, style=reef_style, hover_style=reef_hover,
-              layer_name="Reef habitat", info_mode="on_hover", zoom_to_layer=False)
-    legend_dict["Reef habitat"] = "#EF9F27"
-
-if show_community:
-    m.add_gdf(community_gdf, style=community_style, hover_style=community_hover,
-              layer_name="Community settlement", info_mode="on_hover", zoom_to_layer=False)
-    legend_dict["Community settlement"] = "#D4537E"
-
-if show_notake:
-    m.add_geojson(NOTAKE_GEOJSON, layer_name="No-take buffer zone",
-                  style=notake_style, info_mode=None, zoom_to_layer=False)
-    legend_dict["No-take buffer zone"] = "#639922"
 
 if legend_dict:
     m.add_legend(title="Map key", legend_dict=legend_dict, position="bottomright")
