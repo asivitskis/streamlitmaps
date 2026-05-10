@@ -185,7 +185,7 @@ harbor_gdf,    _ = load_geojson_with_fallback("", HARBOR_DEV_FALLBACK)
 if site_choice == "La Paz harbor":
     center, zoom = [24.14, -110.36], 13
 elif site_choice == "Cabo Pulmo":
-    center, zoom = [23.438124935783712, -109.42855096911228], 11
+    center, zoom = [23.438124935783712, -109.42855096911228], 12
 else:
     center, zoom = [23.85, -110.10], 9
 
@@ -194,7 +194,7 @@ else:
 # -------------------------------------------------------------------
 harbor_style    = {"color": "#993C1D", "fillColor": "#D85A30", "fillOpacity": 0.45, "weight": 1}
 harbor_hover    = {"fillOpacity": 0.65, "weight": 2}
-lapaz_mpa_style = {"color": "#185FA5", "fillColor": "#DDC137", "fillOpacity": 0.08,
+lapaz_mpa_style = {"color": "#18A550", "fillColor": "#DDC137", "fillOpacity": 0.08,
                    "weight": 2, "dashArray": "6 4"}
 # -------------------------------------------------------------------
 # Build map
