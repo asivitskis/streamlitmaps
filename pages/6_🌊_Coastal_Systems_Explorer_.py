@@ -231,13 +231,13 @@ if show_cabo_mpa:
     m.add_vector(
         CABO_MPA_URL,
         layer_name="Marine park boundary",
-        style={"color": "#185FA5", "fillColor": "#378ADD", "fillOpacity": 0.10,
+        style={"color": "#000000", "fillColor": "#FFD700", "fillOpacity": 0.10,
                "weight": 2, "dashArray": "6 4"},
         hover_style={"fillOpacity": 0.25, "weight": 3},
         info_mode="on_hover",
         zoom_to_layer=False,
     )
-    legend_dict["Marine park boundary"] = "#378ADD"
+    legend_dict["Marine park boundary"] = "#FFD700"
 
 if legend_dict:
     m.add_legend(title="Map key", legend_dict=legend_dict, position="bottomright")
