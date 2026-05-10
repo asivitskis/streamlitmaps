@@ -183,7 +183,7 @@ harbor_gdf,    _ = load_geojson_with_fallback("", HARBOR_DEV_FALLBACK)
 # Map center & zoom
 # -------------------------------------------------------------------
 if site_choice == "La Paz harbor":
-    center, zoom = [24.17, -110.36], 13
+    center, zoom = [24.14, -110.36], 13
 elif site_choice == "Cabo Pulmo":
     center, zoom = [23.438124935783712, -109.42855096911228], 13
 else:
