@@ -231,7 +231,7 @@ if show_cabo_mpa:
     m.add_vector(
         CABO_MPA_URL,
         layer_name="Marine park boundary",
-        style={"color": "#000000", "fillColor": "#FF6B35", "fillOpacity": 0.50,
+        style={"color": "#000000", "fillColor": "#FF6B35", "fillOpacity": 0.30,
                "weight": 2, "dashArray": "6 4"},
         hover_style={"fillOpacity": 0.25, "weight": 3},
         info_mode="on_hover",
