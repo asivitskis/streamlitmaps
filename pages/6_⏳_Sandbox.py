@@ -102,7 +102,7 @@ with st.sidebar:
     with st.expander("About the data"):
         st.markdown(
             """
-            **Mangroves:** Global Mangrove Watch 2020 (JAXA).  
+            **Mangroves:** The Nature Conservancy (TNC) — clipped to the Port of La Paz area.  
             **Marine park:** CONANP / WDPA (Protected Planet).  
             **Reef habitat:** Illustrative — based on published reef survey locations.  
             **Harbor development:** Illustrative — derived from satellite imagery.  
@@ -116,24 +116,6 @@ with st.sidebar:
 # -------------------------------------------------------------------
 # Fallback / illustrative GeoJSON
 # -------------------------------------------------------------------
-MANGROVE_FALLBACK = {
-    "type": "FeatureCollection",
-    "features": [
-        {"type": "Feature", "properties": {"name": "Ensenada de La Paz mangroves"},
-         "geometry": {"type": "Polygon", "coordinates": [[
-             [-110.380, 24.180], [-110.360, 24.200], [-110.340, 24.192],
-             [-110.345, 24.172], [-110.370, 24.162], [-110.380, 24.180]]]}},
-        {"type": "Feature", "properties": {"name": "Canal de San Lorenzo mangroves"},
-         "geometry": {"type": "Polygon", "coordinates": [[
-             [-110.400, 24.220], [-110.382, 24.232], [-110.372, 24.222],
-             [-110.388, 24.210], [-110.400, 24.220]]]}},
-        {"type": "Feature", "properties": {"name": "El Mogote mangroves"},
-         "geometry": {"type": "Polygon", "coordinates": [[
-             [-110.345, 24.140], [-110.328, 24.152], [-110.315, 24.142],
-             [-110.330, 24.130], [-110.345, 24.140]]]}},
-    ]
-}
-
 CABO_MPA_FALLBACK = {
     "type": "FeatureCollection",
     "features": [
@@ -206,6 +188,11 @@ NOTAKE_GEOJSON = {
 # -------------------------------------------------------------------
 # Data loading with fallback
 # -------------------------------------------------------------------
+MANGROVE_URL = (
+    "https://raw.githubusercontent.com/asivitskis/EarthInquiryLab/"
+    "main/data/bcs_coastal_ed_data/LP_TNC_mangrove.json"
+)
+
 @st.cache_data(show_spinner="Loading spatial data…")
 def load_geojson_with_fallback(url, fallback_dict):
     try:
@@ -221,10 +208,23 @@ def load_geojson_with_fallback(url, fallback_dict):
         gdf = gpd.GeoDataFrame.from_features(fallback_dict["features"], crs="EPSG:4326")
         return gdf, True
 
-mangrove_gdf, mangrove_fallback = load_geojson_with_fallback(
-    "https://raw.githubusercontent.com/opengeos/datasets/main/places/Baja_California_Sur_mangroves.geojson",
-    MANGROVE_FALLBACK,
-)
+# Mangrove color map — keyed on Cmbio81_20 field
+MANGROVE_COLOR_DICT = {
+    "Pérdida de manglar":   "#ea0c00",   # red   — loss
+    "Manglar sin cambios":  "#027433",   # green — no change
+    "Ganancia de manglar":  "#00fb15",   # lime  — gain
+}
+
+def mangrove_style_callback(feature):
+    value = feature["properties"].get("Cmbio81_20", "")
+    return {
+        "color": "black",
+        "weight": 0.5,
+        "fillColor": MANGROVE_COLOR_DICT.get(value, "#888888"),
+        "fillOpacity": 0.8,
+    }
+
+mangrove_hover_style = {"weight": 2, "color": "yellow", "fillOpacity": 0.9}
 cabo_mpa_gdf, cabo_mpa_fallback = load_geojson_with_fallback(
     "https://raw.githubusercontent.com/opengeos/datasets/main/places/Cabo_Pulmo_NMP.geojson",
     CABO_MPA_FALLBACK,
@@ -233,10 +233,10 @@ harbor_gdf,    _ = load_geojson_with_fallback("", HARBOR_DEV_FALLBACK)
 reef_gdf,      _ = load_geojson_with_fallback("", CABO_REEF_FALLBACK)
 community_gdf, _ = load_geojson_with_fallback("", CABO_COMMUNITY_FALLBACK)
 
-if mangrove_fallback or cabo_mpa_fallback:
+if cabo_mpa_fallback:
     st.sidebar.warning(
-        "Using illustrative geometry for some layers. "
-        "Swap in real GeoJSON URLs to load authoritative data.",
+        "Using illustrative geometry for the Cabo Pulmo MPA layer. "
+        "Swap in a real GeoJSON URL to load authoritative data.",
         icon="🗺️",
     )
 
@@ -253,8 +253,6 @@ else:
 # -------------------------------------------------------------------
 # Styles
 # -------------------------------------------------------------------
-mangrove_style  = {"color": "#0F6E56", "fillColor": "#1D9E75", "fillOpacity": 0.5,  "weight": 1}
-mangrove_hover  = {"fillOpacity": 0.75, "weight": 2}
 harbor_style    = {"color": "#993C1D", "fillColor": "#D85A30", "fillOpacity": 0.45, "weight": 1}
 harbor_hover    = {"fillOpacity": 0.65, "weight": 2}
 lapaz_mpa_style = {"color": "#185FA5", "fillColor": "#378ADD", "fillOpacity": 0.08,
@@ -278,9 +276,17 @@ m.add_basemap(basemap_choice)
 legend_dict = {}
 
 if show_mangroves:
-    m.add_gdf(mangrove_gdf, style=mangrove_style, hover_style=mangrove_hover,
-              layer_name="Mangrove habitat", info_mode="on_hover", zoom_to_layer=False)
-    legend_dict["Mangrove habitat"] = "#1D9E75"
+    m.add_vector(
+        MANGROVE_URL,
+        layer_name="Mangrove habitat",
+        style_callback=mangrove_style_callback,
+        hover_style=mangrove_hover_style,
+        info_mode="on_hover",
+        zoom_to_layer=False,
+    )
+    legend_dict["Mangrove habitat — loss"]      = "#ea0c00"
+    legend_dict["Mangrove habitat — no change"] = "#027433"
+    legend_dict["Mangrove habitat — gain"]      = "#00fb15"
 
 if show_harbor:
     m.add_gdf(harbor_gdf, style=harbor_style, hover_style=harbor_hover,
@@ -463,7 +469,8 @@ with tip_col:
 # -------------------------------------------------------------------
 st.markdown("---")
 st.caption(
-    "**Data sources:** Global Mangrove Watch, JAXA (2020) · CONANP / WDPA Protected Planet · "
+    "**Data sources:** La Paz mangroves — The Nature Conservancy (TNC), clipped to Port of La Paz area · "
+    "CONANP / WDPA Protected Planet · "
     "Illustrative layers derived from satellite imagery and published survey data. "
     "All data are for educational purposes only and should not be used for legal or decision-making purposes."
 )
