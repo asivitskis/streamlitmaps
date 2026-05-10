@@ -213,9 +213,9 @@ if show_mangroves:
         info_mode="on_hover",
         zoom_to_layer=False,
     )
-    legend_dict["Mangrove habitat — loss"]      = "#ea0c00"
-    legend_dict["Mangrove habitat — no change"] = "#027433"
-    legend_dict["Mangrove habitat — gain"]      = "#00fb15"
+    legend_dict["Mangrove habitat (1981-2020) — loss"]      = "#ea0c00"
+    legend_dict["Mangrove habitat (1981-2020) — no change"] = "#027433"
+    legend_dict["Mangrove habitat (1981-2020) — gain"]      = "#00fb15"
 
 if show_harbor:
     m.add_gdf(harbor_gdf, style=harbor_style, hover_style=harbor_hover,
