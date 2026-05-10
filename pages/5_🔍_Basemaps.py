@@ -60,7 +60,7 @@ with st.sidebar:
 
     if site_choice in ["La Paz harbor", "Compare both"]:
         st.markdown("### La Paz layers")
-        show_mangroves = st.checkbox("Mangrove gain / loss (1981–2020)", value=True)
+        show_mangroves = st.checkbox("Mangrove habitat", value=True)
         show_harbor    = st.checkbox("Port & marina development", value=True)
         show_lapaz_mpa = st.checkbox("Bay of La Paz biosphere reserve", value=False)
     else:
@@ -102,7 +102,7 @@ with st.sidebar:
     with st.expander("About the data"):
         st.markdown(
             """
-            **Mangroves:** Global Mangrove Watch / TNC — mangrove gain & loss 1981–2020 (La Paz bay).  
+            **Mangroves:** The Nature Conservancy (TNC) — clipped to the Port of La Paz area.  
             **Marine park:** CONANP / WDPA (Protected Planet).  
             **Reef habitat:** Illustrative — based on published reef survey locations.  
             **Harbor development:** Illustrative — derived from satellite imagery.  
@@ -116,30 +116,6 @@ with st.sidebar:
 # -------------------------------------------------------------------
 # Fallback / illustrative GeoJSON
 # -------------------------------------------------------------------
-MANGROVE_GAIN_FALLBACK = {
-    "type": "FeatureCollection",
-    "features": [
-        {"type": "Feature", "properties": {"name": "El Mogote gain (illustrative)", "change": "Gain"},
-         "geometry": {"type": "Polygon", "coordinates": [[
-             [-110.345, 24.140], [-110.328, 24.152], [-110.315, 24.142],
-             [-110.330, 24.130], [-110.345, 24.140]]]}},
-    ]
-}
-
-MANGROVE_LOSS_FALLBACK = {
-    "type": "FeatureCollection",
-    "features": [
-        {"type": "Feature", "properties": {"name": "Ensenada de La Paz loss (illustrative)", "change": "Loss"},
-         "geometry": {"type": "Polygon", "coordinates": [[
-             [-110.380, 24.180], [-110.360, 24.200], [-110.340, 24.192],
-             [-110.345, 24.172], [-110.370, 24.162], [-110.380, 24.180]]]}},
-        {"type": "Feature", "properties": {"name": "Canal de San Lorenzo loss (illustrative)", "change": "Loss"},
-         "geometry": {"type": "Polygon", "coordinates": [[
-             [-110.400, 24.220], [-110.382, 24.232], [-110.372, 24.222],
-             [-110.388, 24.210], [-110.400, 24.220]]]}},
-    ]
-}
-
 CABO_MPA_FALLBACK = {
     "type": "FeatureCollection",
     "features": [
@@ -212,6 +188,11 @@ NOTAKE_GEOJSON = {
 # -------------------------------------------------------------------
 # Data loading with fallback
 # -------------------------------------------------------------------
+MANGROVE_URL = (
+    "https://raw.githubusercontent.com/asivitskis/EarthInquiryLab/"
+    "main/data/bcs_coastal_ed_data/LP_TNC_mangrove.json"
+)
+
 @st.cache_data(show_spinner="Loading spatial data…")
 def load_geojson_with_fallback(url, fallback_dict):
     try:
@@ -227,57 +208,14 @@ def load_geojson_with_fallback(url, fallback_dict):
         gdf = gpd.GeoDataFrame.from_features(fallback_dict["features"], crs="EPSG:4326")
         return gdf, True
 
-# La Paz bay bounding box: covers the full bay, El Mogote peninsula, and estuary (~30×33 km)
-_LAPAZ_BBOX = "-110.55,24.05,-110.20,24.35"
-_TNC_BASE = (
-    "https://services.arcgis.com/F7DSX1DSNSiWmOqh/arcgis/rest/services/"
-    "Manglares_cambio_1981_a_2020/FeatureServer/1/query"
-    "?outFields=*&f=geojson&outSR=4326"
-    "&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects"
-    f"&geometry={_LAPAZ_BBOX}"
-)
+@st.cache_data(show_spinner="Loading mangrove data…")
+def load_mangrove_geojson(url):
+    r = requests.get(url, timeout=15)
+    r.raise_for_status()
+    gdf = gpd.GeoDataFrame.from_features(r.json()["features"], crs="EPSG:4326")
+    return gdf
 
-def load_mangrove_change():
-    """
-    Query the TNC ArcGIS FeatureServer for mangrove gain/loss polygons
-    clipped to La Paz bay. Returns (gain_gdf, loss_gdf, used_fallback, diag_lines).
-
-    Fires two requests (one per change_typ value). Falls back to illustrative
-    geometries on any error and returns diagnostic lines for display.
-    """
-    diag = []
-    try:
-        gdfs = []
-        for change_val in ("Gain", "Loss"):
-            where = f"change_typ='{change_val}'"
-            url = _TNC_BASE + f"&where={requests.utils.quote(where)}"
-            diag.append(f"GET {change_val}: {url}")
-            r = requests.get(url, timeout=20, headers={"User-Agent": "Mozilla/5.0"})
-            diag.append(f"  -> HTTP {r.status_code}")
-            r.raise_for_status()
-            payload = r.json()
-            # Surface ArcGIS-level errors (service returns 200 with error body)
-            if "error" in payload:
-                raise ValueError(f"ArcGIS error: {payload['error']}")
-            n = len(payload.get("features", []))
-            diag.append(f"  -> {n} features")
-            if n:
-                fields = list(payload["features"][0]["properties"].keys())
-                diag.append(f"  -> fields: {fields}")
-                gdfs.append(
-                    (change_val, gpd.GeoDataFrame.from_features(payload["features"], crs="EPSG:4326"))
-                )
-        if not gdfs:
-            raise ValueError("No features returned for La Paz bay bbox")
-        result = {label: gdf for label, gdf in gdfs}
-        return result.get("Gain", gpd.GeoDataFrame()), result.get("Loss", gpd.GeoDataFrame()), False, diag
-    except Exception as exc:
-        diag.append(f"FAILED: {type(exc).__name__}: {exc}")
-        gain_gdf = gpd.GeoDataFrame.from_features(MANGROVE_GAIN_FALLBACK["features"], crs="EPSG:4326")
-        loss_gdf = gpd.GeoDataFrame.from_features(MANGROVE_LOSS_FALLBACK["features"], crs="EPSG:4326")
-        return gain_gdf, loss_gdf, True, diag
-
-mangrove_gain_gdf, mangrove_loss_gdf, mangrove_fallback, mangrove_diag = load_mangrove_change()
+mangrove_gdf = load_mangrove_geojson(MANGROVE_URL)
 cabo_mpa_gdf, cabo_mpa_fallback = load_geojson_with_fallback(
     "https://raw.githubusercontent.com/opengeos/datasets/main/places/Cabo_Pulmo_NMP.geojson",
     CABO_MPA_FALLBACK,
@@ -286,16 +224,12 @@ harbor_gdf,    _ = load_geojson_with_fallback("", HARBOR_DEV_FALLBACK)
 reef_gdf,      _ = load_geojson_with_fallback("", CABO_REEF_FALLBACK)
 community_gdf, _ = load_geojson_with_fallback("", CABO_COMMUNITY_FALLBACK)
 
-if mangrove_fallback or cabo_mpa_fallback:
+if cabo_mpa_fallback:
     st.sidebar.warning(
-        "Using illustrative geometry for some layers. "
-        "Swap in real GeoJSON URLs to load authoritative data.",
+        "Using illustrative geometry for the Cabo Pulmo MPA layer. "
+        "Swap in a real GeoJSON URL to load authoritative data.",
         icon="🗺️",
     )
-    if mangrove_fallback and mangrove_diag:
-        with st.sidebar.expander("🔍 Mangrove load diagnostics"):
-            for line in mangrove_diag:
-                st.code(line, language=None)
 
 # -------------------------------------------------------------------
 # Map center & zoom
@@ -310,10 +244,8 @@ else:
 # -------------------------------------------------------------------
 # Styles
 # -------------------------------------------------------------------
-mangrove_gain_style  = {"color": "#0F6E56", "fillColor": "#2ECC71", "fillOpacity": 0.55, "weight": 1}
-mangrove_gain_hover  = {"fillOpacity": 0.80, "weight": 2}
-mangrove_loss_style  = {"color": "#8B1A1A", "fillColor": "#E74C3C", "fillOpacity": 0.55, "weight": 1}
-mangrove_loss_hover  = {"fillOpacity": 0.80, "weight": 2}
+mangrove_style  = {"color": "#0F6E56", "fillColor": "#1D9E75", "fillOpacity": 0.5,  "weight": 1}
+mangrove_hover  = {"fillOpacity": 0.75, "weight": 2}
 harbor_style    = {"color": "#993C1D", "fillColor": "#D85A30", "fillOpacity": 0.45, "weight": 1}
 harbor_hover    = {"fillOpacity": 0.65, "weight": 2}
 lapaz_mpa_style = {"color": "#185FA5", "fillColor": "#378ADD", "fillOpacity": 0.08,
@@ -337,14 +269,9 @@ m.add_basemap(basemap_choice)
 legend_dict = {}
 
 if show_mangroves:
-    if not mangrove_gain_gdf.empty:
-        m.add_gdf(mangrove_gain_gdf, style=mangrove_gain_style, hover_style=mangrove_gain_hover,
-                  layer_name="Mangrove gain (1981–2020)", info_mode="on_hover", zoom_to_layer=False)
-        legend_dict["Mangrove gain"] = "#2ECC71"
-    if not mangrove_loss_gdf.empty:
-        m.add_gdf(mangrove_loss_gdf, style=mangrove_loss_style, hover_style=mangrove_loss_hover,
-                  layer_name="Mangrove loss (1981–2020)", info_mode="on_hover", zoom_to_layer=False)
-        legend_dict["Mangrove loss"] = "#E74C3C"
+    m.add_gdf(mangrove_gdf, style=mangrove_style, hover_style=mangrove_hover,
+              layer_name="Mangrove habitat", info_mode="on_hover", zoom_to_layer=False)
+    legend_dict["Mangrove habitat"] = "#1D9E75"
 
 if show_harbor:
     m.add_gdf(harbor_gdf, style=harbor_style, hover_style=harbor_hover,
@@ -527,7 +454,8 @@ with tip_col:
 # -------------------------------------------------------------------
 st.markdown("---")
 st.caption(
-    "**Data sources:** Global Mangrove Watch / The Nature Conservancy — mangrove gain & loss 1981–2020 · CONANP / WDPA Protected Planet · "
+    "**Data sources:** La Paz mangroves — The Nature Conservancy (TNC), clipped to Port of La Paz area · "
+    "CONANP / WDPA Protected Planet · "
     "Illustrative layers derived from satellite imagery and published survey data. "
     "All data are for educational purposes only and should not be used for legal or decision-making purposes."
 )
