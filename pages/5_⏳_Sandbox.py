@@ -62,11 +62,13 @@ with st.sidebar:
         st.markdown("### La Paz layers")
         show_mangroves = st.checkbox("Mangrove habitat", value=True)
         show_harbor    = st.checkbox("Port & marina development", value=True)
-        show_lapaz_mpa = st.checkbox("Bay of La Paz biosphere reserve", value=False)
+        show_lapaz_mpa      = st.checkbox("Bay of La Paz biosphere reserve", value=False)
+        show_manglitour     = st.checkbox("Manglitour stops", value=True)
     else:
-        show_mangroves = False
-        show_harbor    = False
-        show_lapaz_mpa = False
+        show_mangroves      = False
+        show_harbor         = False
+        show_lapaz_mpa      = False
+        show_manglitour     = False
 
     if site_choice in ["Cabo Pulmo", "Compare both"]:
         st.markdown("### Cabo Pulmo layers")
@@ -144,6 +146,33 @@ CABO_MPA_URL = (
     "https://raw.githubusercontent.com/asivitskis/EarthInquiryLab/"
     "main/data/bcs_coastal_ed_data/CaboPulmo_Boundary_CONANP.json"
 )
+MANGLITOUR_URL = (
+    "https://raw.githubusercontent.com/asivitskis/EarthInquiryLab/"
+    "main/data/bcs_coastal_ed_data/Manglitour_Stops.geojson"
+)
+
+# Color map keyed on the "Type" field
+STOP_COLOR_DICT = {
+    "Inicio de reccorido": "#FFD700",   # gold   — start of route
+    "Barco hundido":       "#1E90FF",   # blue   — sunken ship
+    "Malvinas":            "#FF6347",   # tomato — Malvinas site
+    "Acuacultura":         "#9B59B6",   # purple — aquaculture
+    "Alimentos":           "#2ECC71",   # green  — food/provisions
+}
+STOP_COLOR_DEFAULT = "#AAAAAA"
+
+def manglitour_style_callback(feature):
+    stop_type = feature["properties"].get("Type", "")
+    color = STOP_COLOR_DICT.get(stop_type, STOP_COLOR_DEFAULT)
+    return {
+        "radius": 8,
+        "color": "white",
+        "weight": 1.5,
+        "fillColor": color,
+        "fillOpacity": 0.95,
+    }
+
+manglitour_hover_style = {"radius": 11, "weight": 2.5, "color": "#FFFFFF", "fillOpacity": 1.0}
 
 @st.cache_data(show_spinner="Loading spatial data…")
 def load_geojson_with_fallback(url, fallback_dict):
@@ -183,7 +212,7 @@ harbor_gdf,    _ = load_geojson_with_fallback("", HARBOR_DEV_FALLBACK)
 # Map center & zoom
 # -------------------------------------------------------------------
 if site_choice == "La Paz harbor":
-    center, zoom = [24.17, -110.36], 11
+    center, zoom = [24.14, -110.36], 13
 elif site_choice == "Cabo Pulmo":
     center, zoom = [23.438124935783712, -109.42855096911228], 12
 else:
@@ -194,7 +223,7 @@ else:
 # -------------------------------------------------------------------
 harbor_style    = {"color": "#993C1D", "fillColor": "#D85A30", "fillOpacity": 0.45, "weight": 1}
 harbor_hover    = {"fillOpacity": 0.65, "weight": 2}
-lapaz_mpa_style = {"color": "#185FA5", "fillColor": "#378ADD", "fillOpacity": 0.08,
+lapaz_mpa_style = {"color": "#18A550", "fillColor": "#DDC137", "fillOpacity": 0.08,
                    "weight": 2, "dashArray": "6 4"}
 # -------------------------------------------------------------------
 # Build map
@@ -213,9 +242,9 @@ if show_mangroves:
         info_mode="on_hover",
         zoom_to_layer=False,
     )
-    legend_dict["Mangrove habitat — loss"]      = "#ea0c00"
-    legend_dict["Mangrove habitat — no change"] = "#027433"
-    legend_dict["Mangrove habitat — gain"]      = "#00fb15"
+    legend_dict["Mangrove habitat (1981-2020) — loss"]      = "#ea0c00"
+    legend_dict["Mangrove habitat (1981-2020) — no change"] = "#027433"
+    legend_dict["Mangrove habitat (1981-2020) — gain"]      = "#00fb15"
 
 if show_harbor:
     m.add_gdf(harbor_gdf, style=harbor_style, hover_style=harbor_hover,
@@ -231,13 +260,28 @@ if show_cabo_mpa:
     m.add_vector(
         CABO_MPA_URL,
         layer_name="Marine park boundary",
-        style={"color": "#185FA5", "fillColor": "#378ADD", "fillOpacity": 0.10,
+        style={"color": "#000000", "fillColor": "#FF6B35", "fillOpacity": 0.30,
                "weight": 2, "dashArray": "6 4"},
         hover_style={"fillOpacity": 0.25, "weight": 3},
         info_mode="on_hover",
         zoom_to_layer=False,
     )
-    legend_dict["Marine park boundary"] = "#378ADD"
+    legend_dict["Marine park boundary"] = "#FF6B35"
+
+if show_manglitour:
+    m.add_vector(
+        MANGLITOUR_URL,
+        layer_name="Manglitour stops",
+        style_callback=manglitour_style_callback,
+        hover_style=manglitour_hover_style,
+        info_mode="on_hover",
+        zoom_to_layer=False,
+    )
+    legend_dict["Manglitour — Inicio de reccorido"] = "#FFD700"
+    legend_dict["Manglitour — Barco hundido"]       = "#1E90FF"
+    legend_dict["Manglitour — Malvinas"]            = "#FF6347"
+    legend_dict["Manglitour — Acuacultura"]         = "#9B59B6"
+    legend_dict["Manglitour — Alimentos"]           = "#2ECC71"
 
 if legend_dict:
     m.add_legend(title="Map key", legend_dict=legend_dict, position="bottomright")
@@ -272,15 +316,15 @@ map_html = m.to_html()
 st.components.v1.html(map_html, height=680, scrolling=False)
 
 # Download map button
-_download_filename = f"coastal_explorer_{site_choice.lower().replace(' ', '_')}.html"
-with tempfile.NamedTemporaryFile(suffix=".html", delete=False) as f:
+with tempfile.NamedTemporaryFile(suffix=".html", delete=False, mode="w", encoding="utf-8") as f:
+    f.write(map_html)
     tmp_path = f.name
-m.to_html(tmp_path, title=_download_filename, width="100%", height="100%", replace_key=True)
+
 with open(tmp_path, "rb") as f:
     st.download_button(
         label="⬇️ Download map as HTML",
         data=f,
-        file_name=_download_filename,
+        file_name=f"coastal_explorer_{site_choice.lower().replace(' ', '_')}.html",
         mime="text/html",
         help="Download the current map as a standalone HTML file — open it in any browser, even offline.",
     )
