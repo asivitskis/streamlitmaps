@@ -64,11 +64,13 @@ with st.sidebar:
         show_harbor    = st.checkbox("Port & marina development", value=True)
         show_lapaz_mpa      = st.checkbox("Bay of La Paz biosphere reserve", value=False)
         show_manglitour     = st.checkbox("Manglitour stops", value=True)
+        show_concesiones    = st.checkbox("Aquaculture concessions", value=True)
     else:
         show_mangroves      = False
         show_harbor         = False
         show_lapaz_mpa      = False
         show_manglitour     = False
+        show_concesiones    = False
 
     if site_choice in ["Cabo Pulmo", "Compare both"]:
         st.markdown("### Cabo Pulmo layers")
@@ -149,6 +151,10 @@ CABO_MPA_URL = (
 MANGLITOUR_URL = (
     "https://raw.githubusercontent.com/asivitskis/EarthInquiryLab/"
     "main/data/bcs_coastal_ed_data/Manglitour_Stops.geojson"
+)
+CONCESIONES_URL = (
+    "https://raw.githubusercontent.com/asivitskis/EarthInquiryLab/"
+    "main/data/bcs_coastal_ed_data/Concesiones.geojson"
 )
 
 # Color map keyed on the "Type" field
@@ -268,6 +274,23 @@ if show_cabo_mpa:
     )
     legend_dict["Marine park boundary"] = "#FF6B35"
 
+if show_concesiones:
+    m.add_vector(
+        CONCESIONES_URL,
+        layer_name="Aquaculture concessions",
+        style={
+            "color": "#4AA8D8",
+            "weight": 0.8,
+            "fillColor": "#ADE0F5",
+            "fillOpacity": 0.25,
+            "opacity": 0.6,
+        },
+        hover_style={"fillOpacity": 0.45, "weight": 1.5},
+        info_mode="on_hover",
+        zoom_to_layer=False,
+    )
+    legend_dict["Aquaculture concessions"] = "#ADE0F5"
+
 if show_manglitour:
     m.add_vector(
         MANGLITOUR_URL,
@@ -277,11 +300,7 @@ if show_manglitour:
         info_mode="on_hover",
         zoom_to_layer=False,
     )
-    legend_dict["Manglitour — Inicio de reccorido"] = "#FFD700"
-    legend_dict["Manglitour — Barco hundido"]       = "#1E90FF"
-    legend_dict["Manglitour — Malvinas"]            = "#FF6347"
-    legend_dict["Manglitour — Acuacultura"]         = "#9B59B6"
-    legend_dict["Manglitour — Alimentos"]           = "#2ECC71"
+    legend_dict["Manglitour stop"] = "#1E90FF"
 
 if legend_dict:
     m.add_legend(title="Map key", legend_dict=legend_dict, position="bottomright")
@@ -412,13 +431,22 @@ else:  # Compare both
 # Observation text area
 # -------------------------------------------------------------------
 st.markdown("---")
-st.subheader("📝 Record your observations")
+if site_choice == "La Paz harbor":
+    obs_heading = "📝 Record your questions"
+    obs_label   = f"Your questions — {site_choice}"
+    obs_placeholder = "What questions does the map raise for you? What do you want to find out?"
+else:
+    obs_heading = "📝 Record your observations"
+    obs_label   = f"Your observations — {site_choice}"
+    obs_placeholder = "What do you notice? What patterns stand out? What questions does the map raise for you?"
+
+st.subheader(obs_heading)
 
 obs_col, tip_col = st.columns([2, 1])
 with obs_col:
     st.text_area(
-        f"Your observations — {site_choice}",
-        placeholder="What do you notice? What patterns stand out? What questions does the map raise for you?",
+        obs_label,
+        placeholder=obs_placeholder,
         height=140,
         key="observation_box",
     )
