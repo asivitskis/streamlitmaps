@@ -61,12 +61,14 @@ with st.sidebar:
     if site_choice in ["La Paz harbor", "Compare both"]:
         st.markdown("### La Paz layers")
         show_mangroves = st.checkbox("Mangrove habitat", value=True)
-        show_harbor    = st.checkbox("Port & marina development", value=True)
-        show_lapaz_mpa = st.checkbox("Bay of La Paz biosphere reserve", value=False)
+        show_lapaz_mpa      = st.checkbox("Bay of La Paz biosphere reserve", value=False)
+        show_manglitour     = st.checkbox("Manglitour stops", value=True)
+        show_concesiones    = st.checkbox("Aquaculture concessions", value=True)
     else:
-        show_mangroves = False
-        show_harbor    = False
-        show_lapaz_mpa = False
+        show_mangroves      = False
+        show_lapaz_mpa      = False
+        show_manglitour     = False
+        show_concesiones    = False
 
     if site_choice in ["Cabo Pulmo", "Compare both"]:
         st.markdown("### Cabo Pulmo layers")
@@ -109,20 +111,6 @@ with st.sidebar:
 # -------------------------------------------------------------------
 # Fallback / illustrative GeoJSON
 # -------------------------------------------------------------------
-HARBOR_DEV_FALLBACK = {
-    "type": "FeatureCollection",
-    "features": [
-        {"type": "Feature", "properties": {"name": "La Paz waterfront & marina"},
-         "geometry": {"type": "Polygon", "coordinates": [[
-             [-110.318, 24.175], [-110.310, 24.185], [-110.305, 24.180],
-             [-110.312, 24.170], [-110.318, 24.175]]]}},
-        {"type": "Feature", "properties": {"name": "Port terminal"},
-         "geometry": {"type": "Polygon", "coordinates": [[
-             [-110.310, 24.167], [-110.305, 24.172], [-110.300, 24.168],
-             [-110.306, 24.163], [-110.310, 24.167]]]}},
-    ]
-}
-
 LAPAZ_MPA_GEOJSON = {
     "type": "FeatureCollection",
     "features": [{"type": "Feature",
@@ -144,6 +132,37 @@ CABO_MPA_URL = (
     "https://raw.githubusercontent.com/asivitskis/EarthInquiryLab/"
     "main/data/bcs_coastal_ed_data/CaboPulmo_Boundary_CONANP.json"
 )
+MANGLITOUR_URL = (
+    "https://raw.githubusercontent.com/asivitskis/EarthInquiryLab/"
+    "main/data/bcs_coastal_ed_data/Manglitour_Stops.geojson"
+)
+CONCESIONES_URL = (
+    "https://raw.githubusercontent.com/asivitskis/EarthInquiryLab/"
+    "main/data/bcs_coastal_ed_data/Concesiones.geojson"
+)
+
+# Color map keyed on the "Type" field
+STOP_COLOR_DICT = {
+    "Inicio de reccorido": "#FFD700",   # gold   — start of route
+    "Barco hundido":       "#1E90FF",   # blue   — sunken ship
+    "Malvinas":            "#FF6347",   # tomato — Malvinas site
+    "Acuacultura":         "#9B59B6",   # purple — aquaculture
+    "Alimentos":           "#2ECC71",   # green  — food/provisions
+}
+STOP_COLOR_DEFAULT = "#AAAAAA"
+
+def manglitour_style_callback(feature):
+    stop_type = feature["properties"].get("Type", "")
+    color = STOP_COLOR_DICT.get(stop_type, STOP_COLOR_DEFAULT)
+    return {
+        "radius": 8,
+        "color": "white",
+        "weight": 1.5,
+        "fillColor": color,
+        "fillOpacity": 0.95,
+    }
+
+manglitour_hover_style = {"radius": 11, "weight": 2.5, "color": "#FFFFFF", "fillOpacity": 1.0}
 
 @st.cache_data(show_spinner="Loading spatial data…")
 def load_geojson_with_fallback(url, fallback_dict):
@@ -177,8 +196,6 @@ def mangrove_style_callback(feature):
     }
 
 mangrove_hover_style = {"weight": 2, "color": "yellow", "fillOpacity": 0.9}
-harbor_gdf,    _ = load_geojson_with_fallback("", HARBOR_DEV_FALLBACK)
-
 # -------------------------------------------------------------------
 # Map center & zoom
 # -------------------------------------------------------------------
@@ -192,8 +209,6 @@ else:
 # -------------------------------------------------------------------
 # Styles
 # -------------------------------------------------------------------
-harbor_style    = {"color": "#993C1D", "fillColor": "#D85A30", "fillOpacity": 0.45, "weight": 1}
-harbor_hover    = {"fillOpacity": 0.65, "weight": 2}
 lapaz_mpa_style = {"color": "#18A550", "fillColor": "#DDC137", "fillOpacity": 0.08,
                    "weight": 2, "dashArray": "6 4"}
 # -------------------------------------------------------------------
@@ -217,11 +232,6 @@ if show_mangroves:
     legend_dict["Mangrove habitat (1981-2020) — no change"] = "#027433"
     legend_dict["Mangrove habitat (1981-2020) — gain"]      = "#00fb15"
 
-if show_harbor:
-    m.add_gdf(harbor_gdf, style=harbor_style, hover_style=harbor_hover,
-              layer_name="Port & marina development", info_mode="on_hover", zoom_to_layer=False)
-    legend_dict["Port & marina development"] = "#D85A30"
-
 if show_lapaz_mpa:
     m.add_geojson(LAPAZ_MPA_GEOJSON, layer_name="La Paz biosphere reserve",
                   style=lapaz_mpa_style, info_mode=None, zoom_to_layer=False)
@@ -238,6 +248,34 @@ if show_cabo_mpa:
         zoom_to_layer=False,
     )
     legend_dict["Marine park boundary"] = "#FF6B35"
+
+if show_concesiones:
+    m.add_vector(
+        CONCESIONES_URL,
+        layer_name="Aquaculture concessions",
+        style={
+            "color": "#4AA8D8",
+            "weight": 0.8,
+            "fillColor": "#ADE0F5",
+            "fillOpacity": 0.05,
+            "opacity": 0.6,
+        },
+        hover_style={"fillOpacity": 0.45, "weight": 1.5},
+        info_mode="on_hover",
+        zoom_to_layer=False,
+    )
+    legend_dict["Aquaculture concessions"] = "#ADE0F5"
+
+if show_manglitour:
+    m.add_vector(
+        MANGLITOUR_URL,
+        layer_name="Manglitour stops",
+        style_callback=manglitour_style_callback,
+        hover_style=manglitour_hover_style,
+        info_mode="on_hover",
+        zoom_to_layer=False,
+    )
+    legend_dict["Manglitour stop"] = "#1E90FF"
 
 if legend_dict:
     m.add_legend(title="Map key", legend_dict=legend_dict, position="bottomright")
@@ -368,13 +406,22 @@ else:  # Compare both
 # Observation text area
 # -------------------------------------------------------------------
 st.markdown("---")
-st.subheader("📝 Record your observations")
+if site_choice == "La Paz harbor":
+    obs_heading = "📝 Record your questions"
+    obs_label   = f"Your questions — {site_choice}"
+    obs_placeholder = "What questions does the map raise for you? What do you want to find out?"
+else:
+    obs_heading = "📝 Record your observations"
+    obs_label   = f"Your observations — {site_choice}"
+    obs_placeholder = "What do you notice? What patterns stand out? What questions does the map raise for you?"
+
+st.subheader(obs_heading)
 
 obs_col, tip_col = st.columns([2, 1])
 with obs_col:
     st.text_area(
-        f"Your observations — {site_choice}",
-        placeholder="What do you notice? What patterns stand out? What questions does the map raise for you?",
+        obs_label,
+        placeholder=obs_placeholder,
         height=140,
         key="observation_box",
     )
