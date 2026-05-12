@@ -479,7 +479,7 @@ if site_choice == "La Paz harbor":
     st.markdown("**👥 Nombre del equipo**")
     team_name = st.text_input(
         "Nombre del equipo",
-        placeholder="Ej. Equipo Manglar, Equipo Tiburón…",
+        placeholder="Ej. Equipo Corales, Equipo Tiburón…",
         label_visibility="collapsed",
     )
 
@@ -489,7 +489,7 @@ if site_choice == "La Paz harbor":
     st.markdown(
         """
         <div class="synthesis-note">
-        Antes de construir el diagrama socio-ecológico: ¿qué conexiones ven <em>entre</em> las respuestas?
+        ¿Qué conexiones ven <em>entre</em> las respuestas?
         ¿Qué actores, recursos o tensiones aparecen en múltiples preguntas? ¿Dónde están los puntos de apalancamiento?
         </div>
         """,
