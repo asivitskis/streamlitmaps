@@ -76,7 +76,7 @@ st.markdown(
 # 3. Paste the Apps Script code from the bottom of this file into the editor
 # 4. Deploy as Web App (Execute as: Me, Who has access: Anyone)
 # 5. Copy the Web App URL and paste it below
-GOOGLE_APPS_SCRIPT_URL = ""   # ← paste your URL here, e.g. "https://script.google.com/macros/s/.../exec"
+GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbywcot4lZ6uTpm7Pq-fRRNuIWD_15Zq4DlqX6QILaPx7OjZpWibi6a038mgrMIQo_HX/exec"   # ← paste your URL here, e.g. "https://script.google.com/macros/s/.../exec"
 
 # -------------------------------------------------------------------
 # Student-generated questions from Day 1
