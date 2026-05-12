@@ -42,25 +42,38 @@ st.markdown(
         font-weight: 650;
         margin-bottom: 0.3rem;
     }
-    .question-card {
+    .question-list {
         background: #f0f7f4;
         border-left: 4px solid #027433;
         border-radius: 6px;
-        padding: 12px 16px;
-        margin-bottom: 8px;
+        padding: 14px 20px;
+        margin-bottom: 12px;
     }
-    .question-text {
-        font-size: 1.05rem;
-        font-weight: 600;
+    .question-list ol {
+        margin: 0;
+        padding-left: 1.3em;
+    }
+    .question-list li {
+        font-size: 0.97rem;
         color: #1a3d2b;
         margin-bottom: 6px;
+        line-height: 1.45;
     }
     .debrief-note {
-        background: #fff8e1;
-        border-left: 4px solid #f4a100;
+        background: #e8f4fd;
+        border-left: 4px solid #2980b9;
         border-radius: 6px;
         padding: 12px 16px;
         font-size: 0.95rem;
+        color: #1a2e3d;
+    }
+    .synthesis-note {
+        background: #f3f0fa;
+        border-left: 4px solid #7b52ab;
+        border-radius: 6px;
+        padding: 12px 16px;
+        font-size: 0.95rem;
+        color: #2d1f44;
     }
     </style>
     """,
@@ -76,7 +89,7 @@ st.markdown(
 # 3. Paste the Apps Script code from the bottom of this file into the editor
 # 4. Deploy as Web App (Execute as: Me, Who has access: Anyone)
 # 5. Copy the Web App URL and paste it below
-GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbywcot4lZ6uTpm7Pq-fRRNuIWD_15Zq4DlqX6QILaPx7OjZpWibi6a038mgrMIQo_HX/exec"   # ← paste your URL here, e.g. "https://script.google.com/macros/s/.../exec"
+GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz8gwxkqgXi-3FNvRJJjl154AbQFE9ycb1L6EHmZZPkyHLgNuAFaEXY_wNq6BSrJimA/exec"   # ← paste your URL here, e.g. "https://script.google.com/macros/s/.../exec"
 
 # -------------------------------------------------------------------
 # Student-generated questions from Day 1
@@ -420,63 +433,64 @@ os.unlink(tmp_path)
 if site_choice == "La Paz harbor":
 
     st.markdown("---")
-    st.subheader("🌿 Preguntas del grupo — Debrief del Manglitour")
+    st.subheader("🌿 Debrief del Manglitour — OPRE")
+
     st.markdown(
         """
         <div class="debrief-note">
-        Estas son las preguntas que <strong>ustedes generaron</strong> durante el Día 1, antes de visitar el Manglitour.
-        Ahora que regresaron de la experiencia con OPRE, documenten lo que aprendieron sobre cada una.
-        Sus respuestas serán enviadas al documento compartido del grupo para usar como base en la construcción del
-        <strong>diagrama de sistemas socio-ecológicos</strong>.
+        Estas son las preguntas que <strong>su grupo generó</strong> durante el Día 1.
+        Discutan en equipo lo que aprendieron durante la visita con OPRE y designen un
+        <strong>escribano</strong> para capturar las respuestas del equipo abajo.
+        Sus respuestas se enviarán al documento compartido del grupo.
         </div>
         """,
         unsafe_allow_html=True,
     )
 
-    # Participant name field
-    st.markdown("### 👤 Tu nombre")
-    participant_name = st.text_input(
-        "Nombre del participante",
-        placeholder="Escribe tu nombre para identificar tus respuestas en el documento compartido",
+    st.markdown("&nbsp;")
+
+    # Two-column layout: questions on left, response box on right
+    col_q, col_r = st.columns([1, 1], gap="large")
+
+    with col_q:
+        st.markdown("**📋 Preguntas de la visita**")
+        questions_html = "<div class='question-list'><ol>"
+        for q in OPRE_QUESTIONS:
+            questions_html += f"<li>{q['question']}</li>"
+        questions_html += "</ol></div>"
+        st.markdown(questions_html, unsafe_allow_html=True)
+
+    with col_r:
+        st.markdown("**✏️ Respuestas del equipo**")
+
+        # Pre-populate numbered lines matching the questions
+        default_text = "\n\n".join([f"{i}. " for i in range(1, len(OPRE_QUESTIONS) + 1)])
+
+        team_answers = st.text_area(
+            "Respuestas del equipo",
+            value=default_text,
+            height=320,
+            key="team_answers",
+            label_visibility="collapsed",
+            help="El escribano del equipo anota las respuestas aquí. No es necesario tener respuesta completa — capturen lo que aprendieron y lo que sigue siendo duda.",
+        )
+
+    # Team name field — compact, below the two columns
+    st.markdown("**👥 Nombre del equipo**")
+    team_name = st.text_input(
+        "Nombre del equipo",
+        placeholder="Ej. Equipo Manglar, Equipo Tiburón…",
         label_visibility="collapsed",
     )
 
-    st.markdown("### 📋 Responde las preguntas de la visita")
-    st.markdown(
-        "Para cada pregunta, anota lo que escuchaste, observaste o todavía te preguntas. "
-        "No necesitas tener la respuesta completa — captura lo que aprendiste."
-    )
-
-    # Collect per-question answers
-    answers = {}
-    for i, q in enumerate(OPRE_QUESTIONS, 1):
-        st.markdown(
-            f"""
-            <div class="question-card">
-                <div class="question-text">❓ {i}. {q['question']}</div>
-                <div style="color:#555; font-size:0.88rem; margin-bottom:6px; font-style:italic;">{q['english']}</div>
-                <div style="color:#027433; font-size:0.85rem;">{q['layer_hint']}</div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-        answers[q["id"]] = st.text_area(
-            label=f"Respuesta — pregunta {i}",
-            placeholder="¿Qué aprendiste? ¿Qué te dijeron? ¿Qué sigue siendo una duda?",
-            height=100,
-            key=f"ans_{q['id']}",
-            label_visibility="collapsed",
-        )
-
-    # Systems connections synthesis field
+    # Systems synthesis — full width, separate section
     st.markdown("---")
     st.markdown("### 🕸️ Conexiones del sistema")
     st.markdown(
         """
-        <div class="debrief-note">
-        Antes de construir el diagrama socio-ecológico, tómate un momento para reflexionar:
-        ¿Qué conexiones ves <em>entre</em> estas preguntas y respuestas?
-        ¿Qué actores, recursos, o tensiones aparecen en múltiples preguntas?
+        <div class="synthesis-note">
+        Antes de construir el diagrama socio-ecológico: ¿qué conexiones ven <em>entre</em> las respuestas?
+        ¿Qué actores, recursos o tensiones aparecen en múltiples preguntas? ¿Dónde están los puntos de apalancamiento?
         </div>
         """,
         unsafe_allow_html=True,
@@ -484,11 +498,11 @@ if site_choice == "La Paz harbor":
     systems_synthesis = st.text_area(
         "Conexiones del sistema",
         placeholder=(
-            "Ejemplo: La sostenibilidad económica (P2, P3, P4) parece depender de la calidad del ecosistema (P1, P5). "
-            "El control del territorio (P6, P7) afecta tanto a la ecología como a la economía...\n\n"
-            "¿Qué elementos se repiten? ¿Qué tensiones ves? ¿Dónde están los puntos de apalancamiento?"
+            "Ej: La sostenibilidad económica (P2, P3, P4) parece depender de la calidad del ecosistema (P1, P5). "
+            "El control del territorio (P6, P7) afecta tanto la ecología como la economía...\n\n"
+            "¿Qué patrones ven? ¿Qué tensiones? ¿Qué sorpresas?"
         ),
-        height=150,
+        height=130,
         key="systems_synthesis",
     )
 
@@ -496,71 +510,54 @@ if site_choice == "La Paz harbor":
     # Submit to Google Doc
     # -------------------------------------------------------------------
     st.markdown("---")
-    st.markdown("### 📤 Enviar al documento compartido")
 
     col_submit, col_tip = st.columns([2, 1])
 
     with col_tip:
         st.info(
-            "📄 Al hacer clic en **Enviar**, tus respuestas se agregarán automáticamente "
-            "al documento compartido del grupo. Asegúrate de haber escrito tu nombre arriba."
+            "📄 Al hacer clic en **Enviar**, las respuestas de su equipo se agregarán "
+            "al documento compartido del grupo. Asegúrense de haber escrito el nombre del equipo."
         )
 
     with col_submit:
-        submit_btn = st.button("✅ Enviar mis respuestas al documento compartido", type="primary")
+        submit_btn = st.button("✅ Enviar respuestas del equipo al documento compartido", type="primary")
 
         if submit_btn:
-            if not participant_name.strip():
-                st.error("⚠️ Por favor escribe tu nombre antes de enviar.")
+            if not team_name.strip():
+                st.error("⚠️ Por favor escriban el nombre de su equipo antes de enviar.")
             elif not GOOGLE_APPS_SCRIPT_URL:
-                # Show a preview of what would be sent (useful during setup/testing)
                 st.warning(
                     "⚙️ **Modo de prueba:** No se ha configurado la URL de Google Apps Script. "
                     "Aquí está lo que se enviaría al documento:"
                 )
-                preview_lines = [
-                    f"**Participante:** {participant_name}",
-                    f"**Fecha:** {datetime.now().strftime('%Y-%m-%d %H:%M')}",
-                    "",
-                ]
-                for i, q in enumerate(OPRE_QUESTIONS, 1):
-                    ans = answers[q["id"]].strip() or "_(sin respuesta)_"
-                    preview_lines.append(f"**P{i}: {q['question']}**")
-                    preview_lines.append(ans)
-                    preview_lines.append("")
-                preview_lines.append("**Conexiones del sistema:**")
-                preview_lines.append(systems_synthesis.strip() or "_(sin respuesta)_")
-                st.markdown("\n".join(preview_lines))
+                st.markdown(f"**Equipo:** {team_name}")
+                st.markdown(f"**Fecha:** {datetime.now().strftime('%Y-%m-%d %H:%M')}")
+                st.markdown("**Respuestas:**")
+                st.text(team_answers)
+                st.markdown("**Conexiones del sistema:**")
+                st.text(systems_synthesis.strip() or "(sin respuesta)")
                 st.caption(
                     "Para activar el envío real, configura un Google Apps Script Web App "
                     "y pega la URL en la variable `GOOGLE_APPS_SCRIPT_URL` al inicio del archivo."
                 )
             else:
-                # Build payload
                 payload = {
-                    "participant": participant_name.strip(),
+                    "team": team_name.strip(),
                     "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M"),
                     "site": "La Paz — Manglitour OPRE",
-                    "answers": [
-                        {
-                            "question_es": q["question"],
-                            "answer": answers[q["id"]].strip(),
-                        }
-                        for q in OPRE_QUESTIONS
-                    ],
+                    "answers": team_answers.strip(),
                     "systems_synthesis": systems_synthesis.strip(),
                 }
                 try:
                     resp = requests.post(GOOGLE_APPS_SCRIPT_URL, json=payload, timeout=15)
                     if resp.status_code == 200:
                         st.success(
-                            f"✅ ¡Listo, {participant_name}! Tus respuestas fueron enviadas al documento compartido. "
-                            "El grupo podrá verlas al momento de construir el diagrama de sistemas."
+                            f"✅ ¡Listo, {team_name}! Sus respuestas fueron enviadas al documento compartido."
                         )
                     else:
                         st.error(
                             f"❌ Algo salió mal (código {resp.status_code}). "
-                            "Intenta de nuevo o avisa al facilitador."
+                            "Intenten de nuevo o avisen al facilitador."
                         )
                 except Exception as e:
                     st.error(f"❌ No se pudo conectar al documento: {e}")
@@ -657,28 +654,26 @@ st.caption(
 # =============================================================================
 #
 # function doPost(e) {
-#   var sheet = SpreadsheetApp.getActiveSpreadsheet();
 #   var doc = DocumentApp.openById("YOUR_GOOGLE_DOC_ID_HERE");
 #   var body = doc.getBody();
 #
 #   try {
 #     var data = JSON.parse(e.postData.contents);
 #
-#     body.appendParagraph("").setHeading(DocumentApp.ParagraphHeading.HEADING2);
-#     var header = body.appendParagraph(
-#       "📋 " + data.participant + " — " + data.timestamp
-#     );
+#     // Team header
+#     var header = body.appendParagraph("📋 " + data.team + " — " + data.timestamp);
 #     header.setHeading(DocumentApp.ParagraphHeading.HEADING2);
 #
-#     data.answers.forEach(function(item, i) {
-#       var qPara = body.appendParagraph((i+1) + ". " + item.question_es);
-#       qPara.setBold(true);
-#       body.appendParagraph(item.answer || "(sin respuesta)").setBold(false);
-#     });
+#     // Numbered answers (single text block from the scribe)
+#     body.appendParagraph("Respuestas del equipo:").setBold(true);
+#     body.appendParagraph(data.answers || "(sin respuesta)").setBold(false);
 #
+#     // Systems synthesis
 #     body.appendParagraph("🕸️ Conexiones del sistema:").setBold(true);
 #     body.appendParagraph(data.systems_synthesis || "(sin respuesta)").setBold(false);
-#     body.appendParagraph("---");
+#
+#     // Divider
+#     body.appendParagraph("________________________________________________");
 #
 #     return ContentService.createTextOutput(
 #       JSON.stringify({status: "ok"})
