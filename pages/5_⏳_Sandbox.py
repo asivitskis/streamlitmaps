@@ -563,8 +563,50 @@ if site_choice == "La Paz harbor":
                     st.error(f"❌ No se pudo conectar al documento: {e}")
 
 # -------------------------------------------------------------------
-# Inquiry prompts — Cabo Pulmo and Compare both
+# Inquiry prompts — La Paz (Day 1 reference), Cabo Pulmo, Compare both
 # -------------------------------------------------------------------
+
+if site_choice == "La Paz harbor":
+    st.markdown("---")
+    st.subheader("🔍 Inquiry & Questions — Día 1")
+    st.caption("These prompts guided your exploration on Day 1 and helped generate the questions above.")
+    col_a, col_b = st.columns(2)
+    with col_a:
+        st.markdown(
+            """
+            **Observe the map**
+            - Where do mangrove patches remain, and where have they been displaced by development?
+            - Which mangrove areas appear most isolated or fragmented?
+            - What patterns do you notice about the relationship between the port and the mangroves?
+            """
+        )
+    with col_b:
+        st.markdown(
+            """
+            **Go deeper**
+            - Mangroves are sometimes called "nurseries of the sea." What does their fragmentation mean for the broader bay system?
+            - What questions does this map raise that you'd want to explore during the OPRE mangrove tour?
+            - What data is *missing* from this map that would help you understand this system better?
+            """
+        )
+
+    st.markdown("---")
+    st.subheader("📝 Record your questions")
+    obs_col, tip_col = st.columns([2, 1])
+    with obs_col:
+        st.text_area(
+            "Your questions — La Paz harbor",
+            placeholder="What questions does the map raise for you? What do you want to find out?",
+            height=140,
+            key="observation_box",
+        )
+    with tip_col:
+        st.info(
+            "💡 Use the **drawing tools** on the map above to sketch patterns you notice — "
+            "trace mangrove edges, mark interesting intersections, or drop a pin on something worth discussing.\n\n"
+            "*Drawings are visible during your session but are not saved when the page reloads.*"
+        )
+
 elif site_choice == "Cabo Pulmo":
     st.markdown("---")
     st.subheader("🔍 Inquiry prompts")
