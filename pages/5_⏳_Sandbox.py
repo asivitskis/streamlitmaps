@@ -89,10 +89,7 @@ st.markdown(
 # 3. Paste the Apps Script code from the bottom of this file into the editor
 # 4. Deploy as Web App (Execute as: Me, Who has access: Anyone)
 # 5. Copy the Web App URL and paste it below
-GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz8gwxkqgXi-3FNvRJJjl154AbQFE9ycb1L6EHmZZPkyHLgNuAFaEXY_wNq6BSrJimA/exec"   # ← OPRE / La Paz doc
-
-# ⚙️  CABO PULMO Google Apps Script URL — create a new Google Doc + Apps Script, then paste here
-CABO_PULMO_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz1FrrNc1fILAxDBz3SlrjKo1O2m9lhjHWWrwBaY10nT854I05ONENDCYwKyq-kJOIO/exec"   # ← paste your Cabo Pulmo Web App URL here
+GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz8gwxkqgXi-3FNvRJJjl154AbQFE9ycb1L6EHmZZPkyHLgNuAFaEXY_wNq6BSrJimA/exec"   # ← paste your URL here, e.g. "https://script.google.com/macros/s/.../exec"
 
 # -------------------------------------------------------------------
 # Student-generated questions from Day 1
@@ -176,16 +173,19 @@ with st.sidebar:
     if site_choice in ["Cabo Pulmo", "Compare both"]:
         st.markdown("### Cabo Pulmo layers")
         show_cabo_mpa = st.checkbox("Marine park boundary", value=True)
+        show_cb_point = st.checkbox("Bungalows (trip)", value=True)
     else:
         show_cabo_mpa = False
+        show_cb_point = False
 
     st.markdown("---")
     st.markdown("### Map settings")
 
+    _default_basemap = "HYBRID" if site_choice == "Cabo Pulmo" else "SATELLITE"
     basemap_choice = st.selectbox(
         "Select a basemap:",
         list(leafmap.basemaps.keys()),
-        index=list(leafmap.basemaps.keys()).index("SATELLITE"),
+        index=list(leafmap.basemaps.keys()).index(_default_basemap),
     )
 
     show_draw    = st.checkbox(
@@ -234,6 +234,10 @@ MANGROVE_URL = (
 CABO_MPA_URL = (
     "https://raw.githubusercontent.com/asivitskis/EarthInquiryLab/"
     "main/data/bcs_coastal_ed_data/CaboPulmo_Boundary_CONANP.json"
+)
+CB_POINT_URL = (
+    "https://raw.githubusercontent.com/asivitskis/EarthInquiryLab/"
+    "main/data/bcs_coastal_ed_data/CB_point.geojson"
 )
 MANGLITOUR_URL = (
     "https://raw.githubusercontent.com/asivitskis/EarthInquiryLab/"
@@ -353,6 +357,23 @@ if show_cabo_mpa:
         zoom_to_layer=False,
     )
     legend_dict["Marine park boundary"] = "#FF6B35"
+
+if show_cb_point:
+    m.add_vector(
+        CB_POINT_URL,
+        layer_name="Bungalows (trip)",
+        style_callback=lambda feature: {
+            "radius": 10,
+            "color": "white",
+            "weight": 2,
+            "fillColor": "#FF3366",
+            "fillOpacity": 1.0,
+        },
+        hover_style={"radius": 13, "weight": 2.5, "fillOpacity": 1.0},
+        info_mode="on_hover",
+        zoom_to_layer=False,
+    )
+    legend_dict["Bungalows (trip)"] = "#FF3366"
 
 if show_concesiones:
     m.add_vector(
@@ -634,12 +655,12 @@ elif site_choice == "Cabo Pulmo":
         )
 
     st.markdown("---")
-    st.subheader("📝 Record your questions")
+    st.subheader("📝 Record your observations")
     obs_col, tip_col = st.columns([2, 1])
     with obs_col:
-        cabo_questions = st.text_area(
-            "Your questions — Cabo Pulmo",
-            placeholder="What questions does this map raise for you? What do you want to find out at Cabo Pulmo?",
+        st.text_area(
+            "Your observations — Cabo Pulmo",
+            placeholder="What do you notice? What patterns stand out? What questions does the map raise for you?",
             height=140,
             key="observation_box_cabo",
         )
@@ -649,57 +670,6 @@ elif site_choice == "Cabo Pulmo":
             "trace reef edges, mark interesting intersections, or drop a pin on something worth discussing.\n\n"
             "*Drawings are visible during your session but are not saved when the page reloads.*"
         )
-
-    st.markdown("**👤 Your name or team**")
-    cabo_name = st.text_input(
-        "Your name or team",
-        placeholder="Ej. Equipo Corales, Ana & Luis…",
-        label_visibility="collapsed",
-        key="cabo_name",
-    )
-
-    col_submit, col_tip2 = st.columns([2, 1])
-    with col_tip2:
-        st.info(
-            "📄 Click **Submit** to add your questions to the shared Cabo Pulmo document, "
-            "where the whole group's questions will be collected before the visit."
-        )
-    with col_submit:
-        cabo_submit = st.button("✅ Submit questions to shared document", type="primary", key="cabo_submit")
-        if cabo_submit:
-            if not cabo_name.strip():
-                st.error("⚠️ Please enter your name or team name before submitting.")
-            elif not cabo_questions.strip():
-                st.error("⚠️ Please write at least one question before submitting.")
-            elif not CABO_PULMO_SCRIPT_URL:
-                st.warning(
-                    "⚙️ **Test mode:** No Google Apps Script URL configured for Cabo Pulmo yet. "
-                    "Here's what would be sent:"
-                )
-                st.markdown(f"**Name/Team:** {cabo_name}")
-                st.markdown(f"**Date:** {datetime.now().strftime('%Y-%m-%d %H:%M')}")
-                st.markdown("**Questions:**")
-                st.text(cabo_questions.strip())
-            else:
-                payload = {
-                    "team": cabo_name.strip(),
-                    "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M"),
-                    "site": "Cabo Pulmo",
-                    "questions": cabo_questions.strip(),
-                }
-                try:
-                    resp = requests.post(CABO_PULMO_SCRIPT_URL, json=payload, timeout=15)
-                    if resp.status_code == 200:
-                        st.success(
-                            f"✅ ¡Listo, {cabo_name}! Your questions were added to the shared document."
-                        )
-                    else:
-                        st.error(
-                            f"❌ Something went wrong (code {resp.status_code}). "
-                            "Try again or let the facilitator know."
-                        )
-                except Exception as e:
-                    st.error(f"❌ Could not connect to the document: {e}")
 
 else:  # Compare both
     st.markdown("---")
@@ -746,49 +716,39 @@ st.caption(
 
 
 # =============================================================================
-# GOOGLE APPS SCRIPT CODE — OPRE / La Paz doc (existing)
-# Paste into the Apps Script editor of your OPRE Google Doc
+# GOOGLE APPS SCRIPT CODE — paste this into your Apps Script editor
 # =============================================================================
 #
 # function doPost(e) {
-#   var doc = DocumentApp.openById("YOUR_OPRE_GOOGLE_DOC_ID_HERE");
+#   var doc = DocumentApp.openById("YOUR_GOOGLE_DOC_ID_HERE");
 #   var body = doc.getBody();
+#
 #   try {
 #     var data = JSON.parse(e.postData.contents);
+#
+#     // Team header
 #     var header = body.appendParagraph("📋 " + data.team + " — " + data.timestamp);
 #     header.setHeading(DocumentApp.ParagraphHeading.HEADING2);
+#
+#     // Numbered answers (single text block from the scribe)
 #     body.appendParagraph("Respuestas del equipo:").setBold(true);
 #     body.appendParagraph(data.answers || "(sin respuesta)").setBold(false);
+#
+#     // Systems synthesis
 #     body.appendParagraph("🕸️ Conexiones del sistema:").setBold(true);
 #     body.appendParagraph(data.systems_synthesis || "(sin respuesta)").setBold(false);
-#     body.appendParagraph("________________________________________________");
-#     return ContentService.createTextOutput(JSON.stringify({status: "ok"})).setMimeType(ContentService.MimeType.JSON);
-#   } catch(err) {
-#     return ContentService.createTextOutput(JSON.stringify({status: "error", message: err.toString()})).setMimeType(ContentService.MimeType.JSON);
-#   }
-# }
 #
-# =============================================================================
-# GOOGLE APPS SCRIPT CODE — Cabo Pulmo doc (NEW)
-# 1. Create a new Google Doc for Cabo Pulmo questions
-# 2. Go to Extensions → Apps Script, paste this code
-# 3. Deploy as Web App (Execute as: Me, Who has access: Anyone)
-# 4. Copy the Web App URL into CABO_PULMO_SCRIPT_URL above
-# =============================================================================
-#
-# function doPost(e) {
-#   var doc = DocumentApp.openById("YOUR_CABO_PULMO_GOOGLE_DOC_ID_HERE");
-#   var body = doc.getBody();
-#   try {
-#     var data = JSON.parse(e.postData.contents);
-#     var header = body.appendParagraph("❓ " + data.team + " — " + data.timestamp);
-#     header.setHeading(DocumentApp.ParagraphHeading.HEADING2);
-#     body.appendParagraph("Questions:").setBold(true);
-#     body.appendParagraph(data.questions || "(no response)").setBold(false);
+#     // Divider
 #     body.appendParagraph("________________________________________________");
-#     return ContentService.createTextOutput(JSON.stringify({status: "ok"})).setMimeType(ContentService.MimeType.JSON);
+#
+#     return ContentService.createTextOutput(
+#       JSON.stringify({status: "ok"})
+#     ).setMimeType(ContentService.MimeType.JSON);
+#
 #   } catch(err) {
-#     return ContentService.createTextOutput(JSON.stringify({status: "error", message: err.toString()})).setMimeType(ContentService.MimeType.JSON);
+#     return ContentService.createTextOutput(
+#       JSON.stringify({status: "error", message: err.toString()})
+#     ).setMimeType(ContentService.MimeType.JSON);
 #   }
 # }
 #
