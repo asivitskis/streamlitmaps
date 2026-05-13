@@ -92,7 +92,7 @@ st.markdown(
 GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz8gwxkqgXi-3FNvRJJjl154AbQFE9ycb1L6EHmZZPkyHLgNuAFaEXY_wNq6BSrJimA/exec"   # ← OPRE / La Paz doc
 
 # ⚙️  CABO PULMO Google Apps Script URL — create a new Google Doc + Apps Script, then paste here
-CABO_PULMO_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz5kJ2by2RRHkWO4VY6uKb1EUi1I1-d4o3RKDzoQ-5TwNF7J3AaXdhgqOygr3gtAp1j/exec"   # ← paste your Cabo Pulmo Web App URL here
+CABO_PULMO_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz1FrrNc1fILAxDBz3SlrjKo1O2m9lhjHWWrwBaY10nT854I05ONENDCYwKyq-kJOIO/exec"   # ← paste your Cabo Pulmo Web App URL here
 
 # -------------------------------------------------------------------
 # Student-generated questions from Day 1
