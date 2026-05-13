@@ -89,7 +89,10 @@ st.markdown(
 # 3. Paste the Apps Script code from the bottom of this file into the editor
 # 4. Deploy as Web App (Execute as: Me, Who has access: Anyone)
 # 5. Copy the Web App URL and paste it below
-GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz8gwxkqgXi-3FNvRJJjl154AbQFE9ycb1L6EHmZZPkyHLgNuAFaEXY_wNq6BSrJimA/exec"   # ← paste your URL here, e.g. "https://script.google.com/macros/s/.../exec"
+GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz8gwxkqgXi-3FNvRJJjl154AbQFE9ycb1L6EHmZZPkyHLgNuAFaEXY_wNq6BSrJimA/exec"   # ← OPRE / La Paz doc
+
+# ⚙️  CABO PULMO Google Apps Script URL — create a new Google Doc + Apps Script, then paste here
+CABO_PULMO_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz5kJ2by2RRHkWO4VY6uKb1EUi1I1-d4o3RKDzoQ-5TwNF7J3AaXdhgqOygr3gtAp1j/exec"   # ← paste your Cabo Pulmo Web App URL here
 
 # -------------------------------------------------------------------
 # Student-generated questions from Day 1
@@ -479,7 +482,7 @@ if site_choice == "La Paz harbor":
     st.markdown("**👥 Nombre del equipo**")
     team_name = st.text_input(
         "Nombre del equipo",
-        placeholder="Ej. Equipo Manglar, Equipo Tiburón…",
+        placeholder="Ej. Equipo Corales, Equipo Tiburón…",
         label_visibility="collapsed",
     )
 
@@ -489,7 +492,7 @@ if site_choice == "La Paz harbor":
     st.markdown(
         """
         <div class="synthesis-note">
-        Antes de construir el diagrama socio-ecológico: ¿qué conexiones ven <em>entre</em> las respuestas?
+        ¿Qué conexiones ven <em>entre</em> las respuestas?
         ¿Qué actores, recursos o tensiones aparecen en múltiples preguntas? ¿Dónde están los puntos de apalancamiento?
         </div>
         """,
@@ -631,12 +634,12 @@ elif site_choice == "Cabo Pulmo":
         )
 
     st.markdown("---")
-    st.subheader("📝 Record your observations")
+    st.subheader("📝 Record your questions")
     obs_col, tip_col = st.columns([2, 1])
     with obs_col:
-        st.text_area(
-            "Your observations — Cabo Pulmo",
-            placeholder="What do you notice? What patterns stand out? What questions does the map raise for you?",
+        cabo_questions = st.text_area(
+            "Your questions — Cabo Pulmo",
+            placeholder="What questions does this map raise for you? What do you want to find out at Cabo Pulmo?",
             height=140,
             key="observation_box_cabo",
         )
@@ -646,6 +649,57 @@ elif site_choice == "Cabo Pulmo":
             "trace reef edges, mark interesting intersections, or drop a pin on something worth discussing.\n\n"
             "*Drawings are visible during your session but are not saved when the page reloads.*"
         )
+
+    st.markdown("**👤 Your name or team**")
+    cabo_name = st.text_input(
+        "Your name or team",
+        placeholder="Ej. Equipo Corales, Ana & Luis…",
+        label_visibility="collapsed",
+        key="cabo_name",
+    )
+
+    col_submit, col_tip2 = st.columns([2, 1])
+    with col_tip2:
+        st.info(
+            "📄 Click **Submit** to add your questions to the shared Cabo Pulmo document, "
+            "where the whole group's questions will be collected before the visit."
+        )
+    with col_submit:
+        cabo_submit = st.button("✅ Submit questions to shared document", type="primary", key="cabo_submit")
+        if cabo_submit:
+            if not cabo_name.strip():
+                st.error("⚠️ Please enter your name or team name before submitting.")
+            elif not cabo_questions.strip():
+                st.error("⚠️ Please write at least one question before submitting.")
+            elif not CABO_PULMO_SCRIPT_URL:
+                st.warning(
+                    "⚙️ **Test mode:** No Google Apps Script URL configured for Cabo Pulmo yet. "
+                    "Here's what would be sent:"
+                )
+                st.markdown(f"**Name/Team:** {cabo_name}")
+                st.markdown(f"**Date:** {datetime.now().strftime('%Y-%m-%d %H:%M')}")
+                st.markdown("**Questions:**")
+                st.text(cabo_questions.strip())
+            else:
+                payload = {
+                    "team": cabo_name.strip(),
+                    "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M"),
+                    "site": "Cabo Pulmo",
+                    "questions": cabo_questions.strip(),
+                }
+                try:
+                    resp = requests.post(CABO_PULMO_SCRIPT_URL, json=payload, timeout=15)
+                    if resp.status_code == 200:
+                        st.success(
+                            f"✅ ¡Listo, {cabo_name}! Your questions were added to the shared document."
+                        )
+                    else:
+                        st.error(
+                            f"❌ Something went wrong (code {resp.status_code}). "
+                            "Try again or let the facilitator know."
+                        )
+                except Exception as e:
+                    st.error(f"❌ Could not connect to the document: {e}")
 
 else:  # Compare both
     st.markdown("---")
@@ -692,39 +746,49 @@ st.caption(
 
 
 # =============================================================================
-# GOOGLE APPS SCRIPT CODE — paste this into your Apps Script editor
+# GOOGLE APPS SCRIPT CODE — OPRE / La Paz doc (existing)
+# Paste into the Apps Script editor of your OPRE Google Doc
 # =============================================================================
 #
 # function doPost(e) {
-#   var doc = DocumentApp.openById("YOUR_GOOGLE_DOC_ID_HERE");
+#   var doc = DocumentApp.openById("YOUR_OPRE_GOOGLE_DOC_ID_HERE");
 #   var body = doc.getBody();
-#
 #   try {
 #     var data = JSON.parse(e.postData.contents);
-#
-#     // Team header
 #     var header = body.appendParagraph("📋 " + data.team + " — " + data.timestamp);
 #     header.setHeading(DocumentApp.ParagraphHeading.HEADING2);
-#
-#     // Numbered answers (single text block from the scribe)
 #     body.appendParagraph("Respuestas del equipo:").setBold(true);
 #     body.appendParagraph(data.answers || "(sin respuesta)").setBold(false);
-#
-#     // Systems synthesis
 #     body.appendParagraph("🕸️ Conexiones del sistema:").setBold(true);
 #     body.appendParagraph(data.systems_synthesis || "(sin respuesta)").setBold(false);
-#
-#     // Divider
 #     body.appendParagraph("________________________________________________");
-#
-#     return ContentService.createTextOutput(
-#       JSON.stringify({status: "ok"})
-#     ).setMimeType(ContentService.MimeType.JSON);
-#
+#     return ContentService.createTextOutput(JSON.stringify({status: "ok"})).setMimeType(ContentService.MimeType.JSON);
 #   } catch(err) {
-#     return ContentService.createTextOutput(
-#       JSON.stringify({status: "error", message: err.toString()})
-#     ).setMimeType(ContentService.MimeType.JSON);
+#     return ContentService.createTextOutput(JSON.stringify({status: "error", message: err.toString()})).setMimeType(ContentService.MimeType.JSON);
+#   }
+# }
+#
+# =============================================================================
+# GOOGLE APPS SCRIPT CODE — Cabo Pulmo doc (NEW)
+# 1. Create a new Google Doc for Cabo Pulmo questions
+# 2. Go to Extensions → Apps Script, paste this code
+# 3. Deploy as Web App (Execute as: Me, Who has access: Anyone)
+# 4. Copy the Web App URL into CABO_PULMO_SCRIPT_URL above
+# =============================================================================
+#
+# function doPost(e) {
+#   var doc = DocumentApp.openById("YOUR_CABO_PULMO_GOOGLE_DOC_ID_HERE");
+#   var body = doc.getBody();
+#   try {
+#     var data = JSON.parse(e.postData.contents);
+#     var header = body.appendParagraph("❓ " + data.team + " — " + data.timestamp);
+#     header.setHeading(DocumentApp.ParagraphHeading.HEADING2);
+#     body.appendParagraph("Questions:").setBold(true);
+#     body.appendParagraph(data.questions || "(no response)").setBold(false);
+#     body.appendParagraph("________________________________________________");
+#     return ContentService.createTextOutput(JSON.stringify({status: "ok"})).setMimeType(ContentService.MimeType.JSON);
+#   } catch(err) {
+#     return ContentService.createTextOutput(JSON.stringify({status: "error", message: err.toString()})).setMimeType(ContentService.MimeType.JSON);
 #   }
 # }
 #
