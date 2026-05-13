@@ -173,16 +173,19 @@ with st.sidebar:
     if site_choice in ["Cabo Pulmo", "Compare both"]:
         st.markdown("### Cabo Pulmo layers")
         show_cabo_mpa = st.checkbox("Marine park boundary", value=True)
+        show_cb_point = st.checkbox("Bungalows (trip)", value=True)
     else:
         show_cabo_mpa = False
+        show_cb_point = False
 
     st.markdown("---")
     st.markdown("### Map settings")
 
+    _default_basemap = "OpenStreetMap"
     basemap_choice = st.selectbox(
         "Select a basemap:",
         list(leafmap.basemaps.keys()),
-        index=list(leafmap.basemaps.keys()).index("SATELLITE"),
+        index=list(leafmap.basemaps.keys()).index(_default_basemap),
     )
 
     show_draw    = st.checkbox(
@@ -231,6 +234,10 @@ MANGROVE_URL = (
 CABO_MPA_URL = (
     "https://raw.githubusercontent.com/asivitskis/EarthInquiryLab/"
     "main/data/bcs_coastal_ed_data/CaboPulmo_Boundary_CONANP.json"
+)
+CB_POINT_URL = (
+    "https://raw.githubusercontent.com/asivitskis/EarthInquiryLab/"
+    "main/data/bcs_coastal_ed_data/CB_point.geojson"
 )
 MANGLITOUR_URL = (
     "https://raw.githubusercontent.com/asivitskis/EarthInquiryLab/"
@@ -350,6 +357,23 @@ if show_cabo_mpa:
         zoom_to_layer=False,
     )
     legend_dict["Marine park boundary"] = "#FF6B35"
+
+if show_cb_point:
+    m.add_vector(
+        CB_POINT_URL,
+        layer_name="Bungalows (trip)",
+        style_callback=lambda feature: {
+            "radius": 10,
+            "color": "white",
+            "weight": 2,
+            "fillColor": "#1E90FF",
+            "fillOpacity": 1.0,
+        },
+        hover_style={"radius": 13, "weight": 2.5, "fillOpacity": 1.0},
+        info_mode="on_hover",
+        zoom_to_layer=False,
+    )
+    legend_dict["Bungalows (trip)"] = "#1E90FF"
 
 if show_concesiones:
     m.add_vector(
