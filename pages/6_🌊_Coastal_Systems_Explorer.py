@@ -655,12 +655,12 @@ elif site_choice == "Cabo Pulmo":
         )
 
     st.markdown("---")
-    st.subheader("📝 Record your observations")
+    st.subheader("📝 Record your Questions - Graba tus preguntas")
     obs_col, tip_col = st.columns([2, 1])
     with obs_col:
         st.text_area(
-            "Your observations — Cabo Pulmo",
-            placeholder="What do you notice? What patterns stand out? What questions does the map raise for you?",
+            "Your questions — Cabo Pulmo",
+            placeholder="What questions does the map raise for you? What do you want to find out? Clasifique sus preguntas con las categorías SES",
             height=140,
             key="observation_box_cabo",
         )
