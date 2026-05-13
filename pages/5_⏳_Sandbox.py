@@ -181,7 +181,7 @@ with st.sidebar:
     st.markdown("---")
     st.markdown("### Map settings")
 
-    _default_basemap = "HYBRID" if site_choice == "Cabo Pulmo" else "SATELLITE"
+    _default_basemap = "OpenStreetMap"
     basemap_choice = st.selectbox(
         "Select a basemap:",
         list(leafmap.basemaps.keys()),
@@ -366,14 +366,14 @@ if show_cb_point:
             "radius": 10,
             "color": "white",
             "weight": 2,
-            "fillColor": "#FF3366",
+            "fillColor": "#1E90FF",
             "fillOpacity": 1.0,
         },
         hover_style={"radius": 13, "weight": 2.5, "fillOpacity": 1.0},
         info_mode="on_hover",
         zoom_to_layer=False,
     )
-    legend_dict["Bungalows (trip)"] = "#FF3366"
+    legend_dict["Bungalows (trip)"] = "#1E90FF"
 
 if show_concesiones:
     m.add_vector(
