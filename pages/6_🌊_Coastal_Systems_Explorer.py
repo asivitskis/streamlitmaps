@@ -89,7 +89,10 @@ st.markdown(
 # 3. Paste the Apps Script code from the bottom of this file into the editor
 # 4. Deploy as Web App (Execute as: Me, Who has access: Anyone)
 # 5. Copy the Web App URL and paste it below
-GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz8gwxkqgXi-3FNvRJJjl154AbQFE9ycb1L6EHmZZPkyHLgNuAFaEXY_wNq6BSrJimA/exec"   # ← paste your URL here, e.g. "https://script.google.com/macros/s/.../exec"
+GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz8gwxkqgXi-3FNvRJJjl154AbQFE9ycb1L6EHmZZPkyHLgNuAFaEXY_wNq6BSrJimA/exec"   # ← OPRE / La Paz doc
+
+# ⚙️  CABO PULMO Google Apps Script URL — paste your Cabo Pulmo Web App URL here
+CABO_PULMO_SCRIPT_URL = ""   # ← paste your Cabo Pulmo Web App URL here
 
 # -------------------------------------------------------------------
 # Student-generated questions from Day 1
@@ -146,6 +149,57 @@ OPRE_QUESTIONS = [
 ]
 
 # -------------------------------------------------------------------
+# Student-generated questions from Day 4 — Cabo Pulmo
+# Grouped by theme for debrief use
+# -------------------------------------------------------------------
+CABO_PULMO_QUESTIONS = [
+    # ── Organización comunitaria ──────────────────────────────────────
+    {"id": "cp1",  "theme": "🏘️ Organización comunitaria",
+     "question": "¿Qué tipo de organización tienen en la comunidad de Cabo Pulmo?"},
+    {"id": "cp2",  "theme": "🏘️ Organización comunitaria",
+     "question": "¿Cómo empezó la comunidad de Cabo Pulmo a organizarse?"},
+    {"id": "cp3",  "theme": "🏘️ Organización comunitaria",
+     "question": "¿Hubo un acontecimiento que motivó que se organizaran en estas nuevas dinámicas?"},
+    {"id": "cp4",  "theme": "🏘️ Organización comunitaria",
+     "question": "¿Alguien externo los convocó?"},
+    {"id": "cp5",  "theme": "🏘️ Organización comunitaria",
+     "question": "¿Qué tanto participa la comunidad en las acciones de conservación?"},
+    # ── Economía y equidad ────────────────────────────────────────────
+    {"id": "cp6",  "theme": "💰 Economía y equidad",
+     "question": "¿Tienen las mismas oportunidades económicas para todas las familias de Cabo Pulmo? ¿Por qué?"},
+    {"id": "cp7",  "theme": "💰 Economía y equidad",
+     "question": "¿Todos reciben los mismos ingresos o hay diferencias importantes?"},
+    {"id": "cp8",  "theme": "💰 Economía y equidad",
+     "question": "¿Alguien se beneficia de esta organización?"},
+    {"id": "cp9",  "theme": "💰 Economía y equidad",
+     "question": "¿Qué comen? ¿Si desean consumir pescado pueden hacer pesca artesanal o tienen que pescar fuera del área?"},
+    {"id": "cp10", "theme": "💰 Economía y equidad",
+     "question": "¿El pueblo ha mejorado su calidad de vida en los últimos años y se refleja en las nuevas generaciones?"},
+    # ── Juventud y futuro ─────────────────────────────────────────────
+    {"id": "cp11", "theme": "🌱 Juventud y futuro",
+     "question": "¿De qué manera se están integrando los jóvenes a las acciones de conservación?"},
+    {"id": "cp12", "theme": "🌱 Juventud y futuro",
+     "question": "¿Qué opciones de trabajo existen para la juventud de la comunidad?"},
+    {"id": "cp13", "theme": "🌱 Juventud y futuro",
+     "question": "¿Los jóvenes desean quedarse en el pueblo?"},
+    # ── Territorio y amenazas ─────────────────────────────────────────
+    {"id": "cp14", "theme": "⚠️ Territorio y amenazas",
+     "question": "¿Cuál es la estrategia para defender el territorio?"},
+    {"id": "cp15", "theme": "⚠️ Territorio y amenazas",
+     "question": "¿Cómo le hacen para vigilar el ANP?"},
+    {"id": "cp16", "theme": "⚠️ Territorio y amenazas",
+     "question": "¿Han recibido amenazas de algún tipo?"},
+    {"id": "cp17", "theme": "⚠️ Territorio y amenazas",
+     "question": "¿Existen espacios a los cuales ya no tienen acceso como lugareños y/o mexicanos?"},
+    {"id": "cp18", "theme": "⚠️ Territorio y amenazas",
+     "question": "¿Qué opinan las comunidades de los extranjeros que llegan a hacer negocios?"},
+    {"id": "cp19", "theme": "⚠️ Territorio y amenazas",
+     "question": "¿Hay cada vez más comunidades de personas extranjeras?"},
+    {"id": "cp20", "theme": "⚠️ Territorio y amenazas",
+     "question": "¿Consideran que el parque de Cabo Pulmo es un éxito social?"},
+]
+
+# -------------------------------------------------------------------
 # Sidebar — layer controls and settings ONLY
 # -------------------------------------------------------------------
 with st.sidebar:
@@ -181,7 +235,7 @@ with st.sidebar:
     st.markdown("---")
     st.markdown("### Map settings")
 
-    _default_basemap = "OpenStreetMap"
+    _default_basemap = "SATELLITE"
     basemap_choice = st.selectbox(
         "Select a basemap:",
         list(leafmap.basemaps.keys()),
@@ -632,6 +686,137 @@ if site_choice == "La Paz harbor":
         )
 
 elif site_choice == "Cabo Pulmo":
+
+    # ----------------------------------------------------------------
+    # DEBRIEF — grouped student questions + response box + submit
+    # ----------------------------------------------------------------
+    st.markdown("---")
+    st.subheader("🪸 Debrief — Cabo Pulmo")
+
+    st.markdown(
+        """
+        <div class="debrief-note">
+        Estas son las preguntas que <strong>su grupo generó</strong> antes de visitar Cabo Pulmo,
+        organizadas por tema. Discutan en equipo lo que aprendieron durante la visita con Judith y
+        en la inmersión de campo, y designen un <strong>escribano</strong> para capturar las
+        respuestas del equipo abajo. Sus respuestas se enviarán al documento compartido del grupo.
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    st.markdown("&nbsp;")
+
+    # Grouped questions on left, response box on right
+    themes = {}
+    for q in CABO_PULMO_QUESTIONS:
+        themes.setdefault(q["theme"], []).append(q)
+
+    col_q, col_r = st.columns([1, 1], gap="large")
+
+    with col_q:
+        st.markdown("**📋 Preguntas de la visita**")
+        q_counter = 1
+        for theme, qs in themes.items():
+            st.markdown(f"**{theme}**")
+            questions_html = f"<div class='question-list'><ol start='{q_counter}'>"
+            for q in qs:
+                questions_html += f"<li>{q['question']}</li>"
+                q_counter += 1
+            questions_html += "</ol></div>"
+            st.markdown(questions_html, unsafe_allow_html=True)
+
+    with col_r:
+        st.markdown("**✏️ Respuestas del equipo**")
+        default_text = "\n\n".join([f"{i}. " for i in range(1, len(CABO_PULMO_QUESTIONS) + 1)])
+        cabo_answers = st.text_area(
+            "Respuestas del equipo — Cabo Pulmo",
+            value=default_text,
+            height=480,
+            key="cabo_answers",
+            label_visibility="collapsed",
+            help="El escribano del equipo anota las respuestas aquí. No es necesario tener respuesta completa — capturen lo que aprendieron y lo que sigue siendo duda.",
+        )
+
+    st.markdown("**👥 Nombre del equipo**")
+    cabo_name = st.text_input(
+        "Nombre del equipo — Cabo Pulmo",
+        placeholder="Ej. Equipo Corales, Equipo Tiburón…",
+        label_visibility="collapsed",
+        key="cabo_name",
+    )
+
+    st.markdown("---")
+    st.markdown("### 🕸️ Conexiones del sistema")
+    st.markdown(
+        """
+        <div class="synthesis-note">
+        ¿Qué conexiones ven <em>entre</em> las respuestas?
+        ¿Qué tensiones entre economía, ecología y comunidad aparecen en múltiples preguntas?
+        ¿Dónde están los puntos de apalancamiento para la sostenibilidad?
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    cabo_synthesis = st.text_area(
+        "Conexiones del sistema — Cabo Pulmo",
+        placeholder=(
+            "Ej: La organización comunitaria (P2, P3, P4) parece ser la base de la resiliencia ecológica (P5, P15). "
+            "La equidad económica (P6, P7) está en tensión con la llegada de extranjeros (P18, P19)...\n\n"
+            "¿Qué patrones ven? ¿Qué tensiones? ¿Qué sorpresas?"
+        ),
+        height=130,
+        key="cabo_synthesis",
+    )
+
+    st.markdown("---")
+    col_submit, col_tip = st.columns([2, 1])
+    with col_tip:
+        st.info(
+            "📄 Al hacer clic en **Enviar**, las respuestas de su equipo se agregarán "
+            "al documento compartido del grupo. Asegúrense de haber escrito el nombre del equipo."
+        )
+    with col_submit:
+        cabo_submit = st.button("✅ Enviar respuestas del equipo al documento compartido", type="primary", key="cabo_submit")
+        if cabo_submit:
+            if not cabo_name.strip():
+                st.error("⚠️ Por favor escriban el nombre de su equipo antes de enviar.")
+            elif not CABO_PULMO_SCRIPT_URL:
+                st.warning(
+                    "⚙️ **Modo de prueba:** No se ha configurado la URL de Google Apps Script. "
+                    "Aquí está lo que se enviaría al documento:"
+                )
+                st.markdown(f"**Equipo:** {cabo_name}")
+                st.markdown(f"**Fecha:** {datetime.now().strftime('%Y-%m-%d %H:%M')}")
+                st.markdown("**Respuestas:**")
+                st.text(cabo_answers.strip())
+                st.markdown("**Conexiones del sistema:**")
+                st.text(cabo_synthesis.strip() or "(sin respuesta)")
+            else:
+                payload = {
+                    "team": cabo_name.strip(),
+                    "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M"),
+                    "site": "Cabo Pulmo",
+                    "answers": cabo_answers.strip(),
+                    "systems_synthesis": cabo_synthesis.strip(),
+                }
+                try:
+                    resp = requests.post(CABO_PULMO_SCRIPT_URL, json=payload, timeout=15)
+                    if resp.status_code == 200:
+                        st.success(
+                            f"✅ ¡Listo, {cabo_name}! Sus respuestas fueron enviadas al documento compartido."
+                        )
+                    else:
+                        st.error(
+                            f"❌ Algo salió mal (código {resp.status_code}). "
+                            "Intenten de nuevo o avisen al facilitador."
+                        )
+                except Exception as e:
+                    st.error(f"❌ No se pudo conectar al documento: {e}")
+
+    # ----------------------------------------------------------------
+    # INQUIRY PROMPTS — kept below the debrief, same as La Paz
+    # ----------------------------------------------------------------
     st.markdown("---")
     st.subheader("🔍 Inquiry prompts")
     col_a, col_b = st.columns(2)
