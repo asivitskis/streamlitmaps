@@ -112,7 +112,7 @@ with center:
 
     m = folium.Map(
         location=[center_lat, center_lon],
-        zoom_start=12,
+        zoom_start=8,
         tiles=None,
         control_scale=True,
     )
