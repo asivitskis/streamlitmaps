@@ -26,7 +26,7 @@ SPECIES_LABELS = {
 }
 
 st.set_page_config(layout="wide")
-st.title("🎣 Koenig Creek Fish Creel Study")
+st.title("Kirkland Lake Creel Study")
 
 @st.cache_data
 def load_data():
@@ -178,7 +178,7 @@ with center:
     legend_html = f"""
     <div style="
         position: fixed;
-        bottom: 36px; left: 10px; z-index: 9999;
+        topleft: 36px; left: 10px; z-index: 9999;
         background: rgba(0,0,0,0.6);
         color: white;
         padding: 8px 12px;
@@ -201,27 +201,13 @@ with center:
 
 # ── Right: summary + length by species ────────────────────────────────────────
 with right:
-    st.subheader("📊 Study Summary")
+    st.subheader("Survey Summary")
     st.markdown(
-        f"""
-        **{total_n} fish** recorded  
-        {date_min.strftime('%b %d') if pd.notna(date_min) else '?'} –
-        {date_max.strftime('%b %d, %Y') if pd.notna(date_max) else '?'}
-
-        Catch dominated by **{dominant}**  
-        ({dom_pct:.0f}% of observations)
-
-        | Stat | Value |
-        |------|-------|
-        | Mean length | {avg_len:.1f} in |
-        | Max length | {max_len:.1f} in |
-        | Mean weight | {avg_wt:.2f} lbs |
-        | Lake Trout | {lake_n} |
-        | Brook Trout | {brook_n} |
-
-        All observations georeferenced  
-        along Koenig Creek.
         """
+This app is a demonstration of visualizing delineated stream network data generated with [WhiteboxTools](https://www.whiteboxgeo.com) and [leafmap](https://leafmap.org/). 
+Both open source python packages can support highly customizable geospatial applications.
+Additional model layers from [Riverscapes Data Exchange](https://www.riverscapes.net/feed) are included to explore how geospatial data can be used to inform river restoration planning.
+"""
     )
 
     st.subheader("Length by Species")
