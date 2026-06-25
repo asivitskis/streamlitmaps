@@ -204,8 +204,9 @@ with right:
     st.subheader("Survey Summary")
     st.markdown(
         """
-This creel study was conducted at Kirkland Lake on June 25, 2026 from 12:00pm to 1:00pm. Catch was predominantly
-lake trout, with a smaller number of brook trout observed. The average length of fish caught was {:.1f} inches.
+This creel study was conducted at Kirkland Lake on June 25, 2026. 5 people fished from 12:00pm to 1:00pm. Catch was predominantly
+lake trout, with a smaller number of brook trout observed. The average length of fish caught was 15 inches.
+
 """
     )
 
