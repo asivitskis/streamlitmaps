@@ -112,7 +112,7 @@ with center:
 
     m = folium.Map(
         location=[center_lat, center_lon],
-        zoom_start=14,
+        zoom_start=12,
         tiles=None,
         control_scale=True,
     )
@@ -204,9 +204,8 @@ with right:
     st.subheader("Survey Summary")
     st.markdown(
         """
-This app is a demonstration of visualizing delineated stream network data generated with [WhiteboxTools](https://www.whiteboxgeo.com) and [leafmap](https://leafmap.org/). 
-Both open source python packages can support highly customizable geospatial applications.
-Additional model layers from [Riverscapes Data Exchange](https://www.riverscapes.net/feed) are included to explore how geospatial data can be used to inform river restoration planning.
+This creel study was conducted at Kirkland Lake on June 25, 2026 from 12:00pm to 1:00pm. Catch was predominantly
+lake trout, with a smaller number of brook trout observed. The average length of fish caught was {:.1f} inches.
 """
     )
 
