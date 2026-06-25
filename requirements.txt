@@ -6,3 +6,5 @@ fiona
 rasterio
 shapely
 rioxarray
+folium
+streamlit-folium
