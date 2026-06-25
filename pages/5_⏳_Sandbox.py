@@ -4,6 +4,7 @@ import pandas as pd
 import plotly.express as px
 import requests
 import folium
+from folium.plugins import Fullscreen, MeasureControl
 from streamlit_folium import st_folium
 
 GEOJSON_URL = (
@@ -11,17 +12,34 @@ GEOJSON_URL = (
     "asivitskis/wr-creel-study/refs/heads/main/data/kc_data.geojson"
 )
 
-st.set_page_config(layout="wide")
+# ── Single shared colour palette ───────────────────────────────────────────────
+# Keys match the raw Species values in the GeoJSON
+SPECIES_COLORS = {
+    "Brook_Trout": "#117733",
+    "Lake_Trout":  "#88CCEE",
+}
 
+# Human-readable labels for display
+SPECIES_LABELS = {
+    "Brook_Trout": "Brook Trout",
+    "Lake_Trout":  "Lake Trout",
+}
+
+st.set_page_config(layout="wide")
 st.title("🎣 Koenig Creek Fish Creel Study")
 
 @st.cache_data
 def load_data():
     gdf = gpd.read_file(GEOJSON_URL)
     gdf["Entrydate"] = pd.to_datetime(gdf["Entrydate"], errors="coerce")
+    # Add a display label column for nicer chart axes/legends
+    gdf["Species_Label"] = gdf["Species"].map(SPECIES_LABELS).fillna(gdf["Species"])
     return gdf
 
 gdf = load_data()
+
+# Plotly needs color_discrete_map keyed on whatever column is passed as `color`
+PLOTLY_COLOR_MAP = {SPECIES_LABELS[k]: v for k, v in SPECIES_COLORS.items()}
 
 # ── Pre-compute summary values ─────────────────────────────────────────────────
 lake_n   = int((gdf["Species"] == "Lake_Trout").sum())
@@ -50,14 +68,17 @@ left, center, right = st.columns([1, 2, 1])
 # ── Left: charts ───────────────────────────────────────────────────────────────
 with left:
     st.subheader("Species Composition")
-    species_counts = gdf["Species"].value_counts().reset_index()
+    species_counts = (
+        gdf["Species_Label"].value_counts().reset_index()
+    )
     species_counts.columns = ["Species", "Count"]
     fig_pie = px.pie(
         species_counts,
         names="Species",
         values="Count",
         hole=0.3,
-        color_discrete_sequence=px.colors.qualitative.Safe,
+        color="Species",
+        color_discrete_map=PLOTLY_COLOR_MAP,
     )
     fig_pie.update_layout(
         margin={"r": 0, "t": 10, "l": 0, "b": 0},
@@ -69,12 +90,15 @@ with left:
     st.subheader("Length Distribution")
     fig_hist = px.histogram(
         gdf, x="Length", nbins=10,
-        color_discrete_sequence=["#4C8CBF"],
+        color="Species_Label",
+        color_discrete_map=PLOTLY_COLOR_MAP,
+        barmode="overlay",
     )
     fig_hist.update_layout(
         margin={"r": 0, "t": 10, "l": 0, "b": 0},
         xaxis_title="Length (in)",
         yaxis_title="Count",
+        legend_title="Species",
         height=240,
     )
     st.plotly_chart(fig_hist, use_container_width=True)
@@ -89,11 +113,10 @@ with center:
     m = folium.Map(
         location=[center_lat, center_lon],
         zoom_start=14,
-        tiles=None,          # suppress default tiles; add ESRI manually
-        control_scale=True,  # scale bar bottom-left
+        tiles=None,
+        control_scale=True,
     )
 
-    # ESRI World Imagery satellite basemap
     folium.TileLayer(
         tiles=(
             "https://server.arcgisonline.com/ArcGIS/rest/services/"
@@ -105,7 +128,6 @@ with center:
         control=True,
     ).add_to(m)
 
-    # Optional: ESRI labels overlay so creek names are visible
     folium.TileLayer(
         tiles=(
             "https://server.arcgisonline.com/ArcGIS/rest/services/"
@@ -118,18 +140,13 @@ with center:
         opacity=0.7,
     ).add_to(m)
 
-    # Species colour mapping
-    SPECIES_COLORS = {
-        "Lake_Trout":  "#e07b39",
-        "Brook_Trout": "#3b82c4",
-    }
-
+    # Markers
     for _, row in gdf.iterrows():
-        species  = row.get("Species", "Unknown")
-        length   = row.get("Length", "N/A")
-        weight   = row.get("Weight", "N/A")
-        color    = SPECIES_COLORS.get(species, "#888888")
-        label    = species.replace("_", " ")
+        species = row.get("Species", "Unknown")
+        length  = row.get("Length", "N/A")
+        weight  = row.get("Weight", "N/A")
+        color   = SPECIES_COLORS.get(species, "#888888")
+        label   = SPECIES_LABELS.get(species, species)
 
         popup_html = f"""
         <div style="font-family:sans-serif;font-size:13px;min-width:120px">
@@ -138,7 +155,6 @@ with center:
           Weight: {weight} lbs
         </div>
         """
-
         folium.CircleMarker(
             location=[row.geometry.y, row.geometry.x],
             radius=7,
@@ -146,22 +162,44 @@ with center:
             weight=1.2,
             fill=True,
             fill_color=color,
-            fill_opacity=0.85,
+            fill_opacity=0.9,
             popup=folium.Popup(popup_html, max_width=180),
             tooltip=f"{label} — {length} in",
         ).add_to(m)
 
-    # Layer control (toggles Satellite / Labels)
-    folium.LayerControl(collapsed=False).add_to(m)
+    # HTML legend matching the shared palette
+    legend_items = "".join(
+        f'<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">'
+        f'<div style="width:14px;height:14px;border-radius:50%;'
+        f'background:{color};border:1.5px solid white;flex-shrink:0"></div>'
+        f'<span>{SPECIES_LABELS[key]}</span></div>'
+        for key, color in SPECIES_COLORS.items()
+    )
+    legend_html = f"""
+    <div style="
+        position: fixed;
+        bottom: 36px; left: 10px; z-index: 9999;
+        background: rgba(0,0,0,0.6);
+        color: white;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-family: sans-serif;
+        font-size: 13px;
+        line-height: 1.5;
+    ">
+      <b style="display:block;margin-bottom:4px">Species</b>
+      {legend_items}
+    </div>
+    """
+    m.get_root().html.add_child(folium.Element(legend_html))
 
-    # Fullscreen plugin
-    from folium.plugins import Fullscreen, MeasureControl
     Fullscreen(position="topright").add_to(m)
     MeasureControl(position="bottomright", primary_length_unit="meters").add_to(m)
+    folium.LayerControl(collapsed=False).add_to(m)
 
     st_folium(m, use_container_width=True, height=580, returned_objects=[])
 
-# ── Right: summary + length-by-species ────────────────────────────────────────
+# ── Right: summary + length by species ────────────────────────────────────────
 with right:
     st.subheader("📊 Study Summary")
     st.markdown(
@@ -188,9 +226,9 @@ with right:
 
     st.subheader("Length by Species")
     fig_box = px.box(
-        gdf, x="Species", y="Length",
-        color="Species",
-        color_discrete_sequence=px.colors.qualitative.Safe,
+        gdf, x="Species_Label", y="Length",
+        color="Species_Label",
+        color_discrete_map=PLOTLY_COLOR_MAP,
         points="all",
     )
     fig_box.update_layout(
