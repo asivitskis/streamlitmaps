@@ -9,9 +9,14 @@ GEOJSON_URL = (
     "asivitskis/wr-creel-study/refs/heads/main/data/kc_data.geojson"
 )
 
+ESRI_SATELLITE = (
+    "https://server.arcgisonline.com/ArcGIS/rest/services/"
+    "World_Imagery/MapServer/tile/{z}/{y}/{x}"
+)
+
 st.set_page_config(layout="wide")
 
-st.title("KR Fish Creel Study")
+st.title("🎣 Koenig Creek Fish Creel Study")
 
 @st.cache_data
 def load_data():
@@ -28,23 +33,147 @@ col2.metric("Lake Trout",  (gdf["Species"] == "Lake_Trout").sum())
 col3.metric("Brook Trout", (gdf["Species"] == "Brook_Trout").sum())
 col4.metric("Average Length", f"{gdf['Length'].mean():.1f} in")
 
-# ── Charts ─────────────────────────────────────────────────────────────────────
-col1, col2 = st.columns(2)
+# ── Summary ────────────────────────────────────────────────────────────────────
+st.markdown("---")
 
-with col1:
+lake_n   = int((gdf["Species"] == "Lake_Trout").sum())
+brook_n  = int((gdf["Species"] == "Brook_Trout").sum())
+total_n  = len(gdf)
+avg_len  = gdf["Length"].mean()
+avg_wt   = gdf["Weight"].mean()
+max_len  = gdf["Length"].max()
+date_min = gdf["Entrydate"].min()
+date_max = gdf["Entrydate"].max()
+
+dominant = "Lake Trout" if lake_n >= brook_n else "Brook Trout"
+dom_pct  = max(lake_n, brook_n) / total_n * 100
+
+st.markdown(
+    f"""
+    **Study Summary** &nbsp;|&nbsp;
+    {total_n} fish recorded between
+    {date_min.strftime('%b %d') if pd.notna(date_min) else '?'} –
+    {date_max.strftime('%b %d, %Y') if pd.notna(date_max) else '?'}.
+    The catch is dominated by **{dominant}** ({dom_pct:.0f}% of observations).
+    Mean length was **{avg_len:.1f} in** (max {max_len:.1f} in)
+    and mean weight was **{avg_wt:.2f} lbs**.
+    All observations were georeferenced along Koenig Creek.
+    """
+)
+
+st.markdown("---")
+
+# ── Map (center) flanked by charts ────────────────────────────────────────────
+left, center, right = st.columns([1, 2, 1])
+
+with left:
+    st.subheader("Species Composition")
     species_counts = gdf["Species"].value_counts().reset_index()
     species_counts.columns = ["Species", "Count"]
-    fig = px.pie(species_counts, names="Species", values="Count",
-                 title="Species Composition")
-    st.plotly_chart(fig, use_container_width=True)
+    fig_pie = px.pie(
+        species_counts,
+        names="Species",
+        values="Count",
+        hole=0.3,
+        color_discrete_sequence=px.colors.qualitative.Safe,
+    )
+    fig_pie.update_layout(
+        margin={"r": 0, "t": 10, "l": 0, "b": 0},
+        legend=dict(orientation="h", yanchor="bottom", y=-0.25),
+        height=260,
+    )
+    st.plotly_chart(fig_pie, use_container_width=True)
 
-with col2:  # only defined once now
-    fig = px.histogram(gdf, x="Length", nbins=10,
-                       title="Fish Length Distribution")
-    st.plotly_chart(fig, use_container_width=True)
+    st.subheader("Length Distribution")
+    fig_hist = px.histogram(
+        gdf, x="Length", nbins=10,
+        color_discrete_sequence=["#4C8CBF"],
+    )
+    fig_hist.update_layout(
+        margin={"r": 0, "t": 10, "l": 0, "b": 0},
+        xaxis_title="Length (in)",
+        yaxis_title="Count",
+        height=240,
+    )
+    st.plotly_chart(fig_hist, use_container_width=True)
+
+with center:
+    st.subheader("Observation Map")
+    center_lat = gdf.geometry.y.mean()
+    center_lon = gdf.geometry.x.mean()
+
+    fig_map = px.scatter_mapbox(
+        gdf,
+        lat=gdf.geometry.y,
+        lon=gdf.geometry.x,
+        color="Species",
+        hover_data=["Length", "Weight"],
+        zoom=13,
+        color_discrete_sequence=px.colors.qualitative.Safe,
+    )
+    fig_map.update_layout(
+        mapbox=dict(
+            style="white-bg",
+            zoom=13,
+            center={"lat": center_lat, "lon": center_lon},
+            layers=[{
+                "below": "traces",
+                "sourcetype": "raster",
+                "source": [ESRI_SATELLITE],
+                "sourceattribution": "Esri World Imagery",
+            }],
+        ),
+        height=580,
+        margin={"r": 0, "t": 0, "l": 0, "b": 0},
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=0.01,
+            xanchor="left",
+            x=0.01,
+            bgcolor="rgba(0,0,0,0.5)",
+            font=dict(color="white"),
+        ),
+    )
+    st.plotly_chart(fig_map, use_container_width=True)
+
+with right:
+    st.subheader("Length by Species")
+    fig_box = px.box(
+        gdf, x="Species", y="Length",
+        color="Species",
+        color_discrete_sequence=px.colors.qualitative.Safe,
+        points="all",
+    )
+    fig_box.update_layout(
+        margin={"r": 0, "t": 10, "l": 0, "b": 0},
+        showlegend=False,
+        xaxis_title="",
+        yaxis_title="Length (in)",
+        height=260,
+    )
+    st.plotly_chart(fig_box, use_container_width=True)
+
+    st.subheader("Weight by Species")
+    fig_box2 = px.box(
+        gdf, x="Species", y="Weight",
+        color="Species",
+        color_discrete_sequence=px.colors.qualitative.Safe,
+        points="all",
+    )
+    fig_box2.update_layout(
+        margin={"r": 0, "t": 10, "l": 0, "b": 0},
+        showlegend=False,
+        xaxis_title="",
+        yaxis_title="Weight (lbs)",
+        height=240,
+    )
+    st.plotly_chart(fig_box2, use_container_width=True)
+
+st.markdown("---")
 
 # ── Photos ─────────────────────────────────────────────────────────────────────
-st.header("Fish Photos")
+st.subheader("📷 Fish Photos")
 
 photos = gdf["git_photo"].dropna().unique().tolist()
 valid_photos = []
@@ -57,35 +186,19 @@ for url in photos:
         pass
 
 if valid_photos:
-    cols = st.columns(3)
+    # 5-column grid, smaller images via fixed width
+    n_cols = 5
+    cols = st.columns(n_cols)
     for i, photo in enumerate(valid_photos):
-        with cols[i % 3]:
-            st.image(photo, use_container_width=True)
+        with cols[i % n_cols]:
+            st.image(photo, width=160)
 else:
-    st.info("No photos could be loaded. Check that `git_photo` URLs are publicly accessible.")
+    st.info("No photos could be loaded — check that `git_photo` URLs are publicly accessible.")
+
+st.markdown("---")
 
 # ── Observations table ─────────────────────────────────────────────────────────
-st.header("Observations")
+st.subheader("📋 Observations")
 
 display_cols = ["Species", "Length", "Weight", "Entrydate", "git_photo"]
 st.dataframe(gdf[display_cols], use_container_width=True)
-
-# ── Map ────────────────────────────────────────────────────────────────────────
-st.header("Observation Map")
-
-# px.scatter_map was added in Plotly 5.19; scatter_mapbox is more widely
-# supported in typical Streamlit deployments.
-fig = px.scatter_mapbox(
-    gdf,
-    lat=gdf.geometry.y,
-    lon=gdf.geometry.x,
-    color="Species",
-    hover_data=["Length", "Weight"],
-    zoom=13,
-)
-fig.update_layout(
-    mapbox_style="open-street-map",
-    height=600,
-    margin={"r": 0, "t": 0, "l": 0, "b": 0},
-)
-st.plotly_chart(fig, use_container_width=True)
