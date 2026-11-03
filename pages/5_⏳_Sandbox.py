@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import os
 import requests
 import streamlit as st
@@ -162,3 +163,6 @@ with col1:
     m.add_basemap(basemap_choice)
 
     m.to_streamlit(height=700)
+=======
+
+>>>>>>> 1cda91c46239e4f2587c83d9bb201d8a33d07149
