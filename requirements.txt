@@ -8,3 +8,4 @@ shapely
 rioxarray
 folium
 streamlit-folium
+requests
