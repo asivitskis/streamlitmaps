@@ -1,8 +1,9 @@
+import os
+import requests
 import streamlit as st
 import leafmap.foliumap as leafmap
-import leafmap as leafmap_utils  # to call get_nwi
-from shapely.ops import unary_union
 import geopandas as gpd
+from shapely.ops import unary_union
 
 st.set_page_config(layout="wide")
 
@@ -17,7 +18,6 @@ st.markdown(
     
     """
 )
-
 
 # Two-column layout: left map, right controls
 col1, col2 = st.columns([4, 1])
@@ -35,8 +35,8 @@ with col2:
     st.markdown(
         """
         Use the **buffer size slider** above to experiment with different buffer 
-        distances around streams and wetlands. This can help evalaute potential 
-        restoration opporunities for planning, design, and environmental review.
+        distances around streams and wetlands. This can help evaluate potential 
+        restoration opportunities for planning, design, and environmental review.
         
         **Parcels** can be clicked for ownership details, giving quick insight into 
         landholder context. Buffer zones update dynamically to support scenario testing 
@@ -53,15 +53,55 @@ bbox_geometry = {
 }
 gdf = gpd.read_file("stokes_parcels_demo.geojson")
 
-# Try fetching NWI data safely
+NWI_URL = (
+    "https://fwspublicservices.wim.usgs.gov/wetlandsmapservice/"
+    "rest/services/Wetlands/MapServer/0/query"
+)
+NWI_CACHE_FILE = "nwi_demo.geojson"
+
+
+@st.cache_data(show_spinner="Loading NWI data...")
+def load_nwi(bbox):
+    """Query the NWI MapServer for a bbox (xmin, ymin, xmax, ymax in EPSG:4326)."""
+    params = {
+        "geometry": ",".join(str(v) for v in bbox),
+        "geometryType": "esriGeometryEnvelope",
+        "inSR": "4326",
+        "outSR": "4326",
+        "spatialRel": "esriSpatialRelIntersects",
+        "outFields": "*",
+        "returnGeometry": "true",
+        "f": "geojson",
+    }
+    r = requests.get(NWI_URL, params=params, timeout=60)
+    r.raise_for_status()
+    data = r.json()
+    if "features" not in data:
+        raise RuntimeError(f"NWI service error: {data.get('error', data)}")
+    return gpd.GeoDataFrame.from_features(data["features"], crs=4326)
+
+
+bbox = (
+    bbox_geometry["xmin"],
+    bbox_geometry["ymin"],
+    bbox_geometry["xmax"],
+    bbox_geometry["ymax"],
+)
+
 try:
-    gdf_nwi = leafmap_utils.get_nwi(bbox_geometry)
-    if gdf_nwi is None or gdf_nwi.empty:
+    gdf_nwi = load_nwi(bbox)
+    if gdf_nwi.empty:
         st.warning("No NWI features found in this area. Stream layer will be empty.")
-        gdf_nwi = gpd.GeoDataFrame(geometry=[], crs="EPSG:4326")
+    elif not os.path.exists(NWI_CACHE_FILE):
+        # Save a local copy once so the demo survives a service outage
+        gdf_nwi.to_file(NWI_CACHE_FILE, driver="GeoJSON")
 except Exception as e:
-    st.error(f"Failed to load NWI data: {e}")
-    gdf_nwi = gpd.GeoDataFrame(geometry=[], crs="EPSG:4326")
+    if os.path.exists(NWI_CACHE_FILE):
+        st.info(f"Live NWI service unavailable ({e}). Using saved local copy.")
+        gdf_nwi = gpd.read_file(NWI_CACHE_FILE)
+    else:
+        st.error(f"Failed to load NWI data: {e}")
+        gdf_nwi = gpd.GeoDataFrame(geometry=[], crs="EPSG:4326")
 
 # Styles
 parcel_style = {"color": "red", "fillColor": "red", "fillOpacity": 0, "weight": 2}
@@ -82,12 +122,14 @@ buffer_hover_style = {
 with col1:
     m = leafmap.Map(center=[36.4039, -80.4379], zoom=16)
 
-    # Apply buffer (only if streams exist)
+    # Apply buffer (only if features exist)
     if not gdf_nwi.empty:
-        buffer_gdf = gdf_nwi.buffer(buffer_distance)
-        merged_buffer = unary_union(buffer_gdf)
-        buffer_gdf_merged = gpd.GeoDataFrame(geometry=[merged_buffer], crs=gdf_nwi.crs)
-        buffer_gdf_merged = buffer_gdf_merged.to_crs(epsg=4326)
+        # Reproject to UTM 17N (meters) so the slider value is a true distance
+        nwi_utm = gdf_nwi.to_crs(epsg=32617)
+        merged_buffer = unary_union(nwi_utm.buffer(buffer_distance))
+        buffer_gdf_merged = gpd.GeoDataFrame(
+            geometry=[merged_buffer], crs=nwi_utm.crs
+        ).to_crs(epsg=4326)
 
         m.add_gdf(
             buffer_gdf_merged,
