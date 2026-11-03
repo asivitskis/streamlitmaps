@@ -30,7 +30,7 @@ index = options.index(default_basemap)
 with col2:
     basemap_choice = st.selectbox("Select a basemap:", options, index)
     buffer_distance = st.slider(
-        "Buffer Distance (meters)", min_value=10, max_value=200, value=50, step=10
+        "Buffer Distance (meters)", min_value=0, max_value=200, value=50, step=10
     )
     st.markdown(
         """
